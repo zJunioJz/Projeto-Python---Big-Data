@@ -1,0 +1,8 @@
+"luiz"	1
+"renan"	1
+"ricardo"	1
+"teste"	1
+"thiago"	1
+"yuri"	1
+"daniel"	1
+"jefferson"	3
