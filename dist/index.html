@@ -24,10 +24,27 @@
         <!-- Botão de Alternar Barra Lateral -->
         <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle"><i
                 data-feather="menu"></i></button>
-        <img class="dropdown-notifications-item-img" src="assets/img/Logo2.png" width="75" />
+        <a href="index.html">
+            <img src="assets/img/Logo2.png" width="90" /></a>
 
         <!-- Itens da Barra de Navegação -->
         <ul class="navbar-nav align-items-center ms-auto">
+            <li class="nav-item dropdown no-caret d-none d-md-block me-3">
+                <a class="nav-link dropdown-toggle" id="navbarDropdownDocs" href="javascript:void(0);" role="button"
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <div class="fw-500">Administração</div>
+                    <i class="fas fa-chevron-right dropdown-arrow"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end py-0 me-sm-n15 me-lg-0 o-hidden animated--fade-in-up"
+                    aria-labelledby="navbarDropdownDocs">
+                    <div class="dropdown-divider m-0"></div>
+                    <a class="dropdown-item py-3" href="Painel.html" target="_blank">
+                        <div class="icon-stack bg-primary-soft text-primary me-4"><i data-feather="code"></i></div>
+                        <div>
+                            <div class="small text-gray-500">Painel de Importação</div>
+                        </div>
+                    </a>
+            </li>
             <!-- Dropdown do Usuário -->
             <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
                 <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage"
@@ -79,8 +96,7 @@
                                 <a class="nav-link" href="dashboard-1.html">
                                     Home
                                 </a>
-                                <a class="nav-link" href="ui">Gráficos</a>
-                                <a class="nav-link" href="dashboard-3.html">Notas</a>
+                                <a class="nav-link" href="Grafico.html">Gráficos</a>
                             </nav>
                         </div>
                     </div>
