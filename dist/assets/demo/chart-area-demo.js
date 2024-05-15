@@ -74,8 +74,9 @@ var myLineChart = new Chart(ctx, {
                 25000,
                 40000
             ]
-        }]
+        }],
     },
+    
     options: {
         maintainAspectRatio: false,
         layout: {
