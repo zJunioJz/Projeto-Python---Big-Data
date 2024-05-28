@@ -77,4 +77,4 @@ st.plotly_chart(fig)
 
 
 
-#usar para rodar > python -m streamlit run test.py
+#usar para rodar > python -m streamlit run main.py
