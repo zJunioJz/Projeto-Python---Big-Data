@@ -1,181 +1,101 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from streamlit_option_menu import option_menu
-from numerize.numerize import numerize
-import time
-st.set_option('deprecation.showPyplotGlobalUse', False)
-import plotly.graph_objs as go
 
-#uncomment this line if you use mysql
-#from query import *
+# Configurar layout da página
+st.set_page_config(page_title="Home", page_icon="", layout="wide")
 
-st.set_page_config(page_title="Dashboard",page_icon="🌍",layout="wide")
-st.header("ANALYTICAL PROCESSING, KPI, TRENDS & PREDICTIONS")
+# Tabs para Medidas fisiológicas e Medidas antropométricas
+tab1, tab2 = st.tabs(["Medidas fisiológicas", "Medidas antropométricas"])
 
-#all graphs we use custom css not streamlit 
-theme_plotly = None 
+# Código para Medidas fisiológicas
+with tab1:
+    st.success("**Medidas fisiológicas**")
 
+    # Carregar dados do Excel
+    tabela_fisio = pd.read_excel('Dados.xlsx', sheet_name='Medidas fisiológicas', nrows=350)
+    tabela_fisio = tabela_fisio[['Turma','Nome','FC rep','PA rep','FCmáx polar','FCmáx teste','Teste FC','FCmáx prev.','FC Polar leve','FC Polar mod.','FC Polar méd.','FC Polar forte','FC Polar máx','FCteste leve','FCteste mod.','FCteste méd.','FCteste forte','FCteste máx','FCprev leve','FCprev mod.','FCprev méd.','FCprev forte','FCprev máx']]
 
-# load Style css
-with open('style.css')as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html = True)
+    # Substituir valores não identificados por "-"
+    tabela_fisio = tabela_fisio.replace(',', '-')
 
-#uncomment these two lines if you fetch data from mysql
-#result = view_all_data()
-#df=pd.DataFrame(result,columns=["Policy","Expiry","Location","State","Region","Investment","Construction","BusinessType","Earthquake","Flood","Rating","id"])
+    # Substituir "-" por " - " para manter o intervalo
+    tabela_fisio = tabela_fisio.replace(',', ' - ', regex=True)
 
-#load excel file | comment this line when  you fetch data from mysql
-df=pd.read_excel('data.xlsx', sheet_name='Sheet1')
+    # Converter para tipo numérico, ignorando os valores não numéricos
+    tabela_fisio = tabela_fisio.apply(pd.to_numeric, errors='ignore')
 
-#side bar logo
+    for col in tabela_fisio.columns[2:]:
+        tabela_fisio[col] = pd.to_numeric(tabela_fisio[col], errors='coerce')
 
+    # Carregar estilo CSS
+    with open('style.css') as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-#switcher
+    # Selecionar turma
+    selected_turma = st.selectbox('Selecione a Turma', tabela_fisio['Turma'].unique())
 
-region=st.sidebar.multiselect(
-    "SELECT REGION",
-     options=df["Region"].unique(),
-     default=df["Region"].unique(),
-)
-location=st.sidebar.multiselect(
-    "SELECT LOCATION",
-     options=df["Location"].unique(),
-     default=df["Location"].unique(),
-)
-construction=st.sidebar.multiselect(
-    "SELECT CONSTRUCTION",
-     options=df["Construction"].unique(),
-     default=df["Construction"].unique(),
-)
+    # Filtrar alunos da turma selecionada
+    alunos_turma = tabela_fisio[tabela_fisio['Turma'] == selected_turma]['Nome'].unique()
 
-df_selection=df.query(
-    "Region==@region & Location==@location & Construction ==@construction"
-)
+    # Selecionar aluno
+    selected_aluno = st.selectbox('Selecione o aluno', alunos_turma)
 
+    # Filtrar dados do aluno selecionado
+    aluno_data_fisio = tabela_fisio[(tabela_fisio['Turma'] == selected_turma) & (tabela_fisio['Nome'] == selected_aluno)]
 
-def graphs():
-    #total_investment=int(df_selection["Investment"]).sum()
-    #averageRating=int(round(df_selection["Rating"]).mean(),2) 
-    #simple bar graph  investment by business type
-    investment_by_business_type=(
-        df_selection.groupby(by=["BusinessType"]).count()[["Investment"]].sort_values(by="Investment")
-    )
-    fig_investment=px.bar(
-       investment_by_business_type,
-       x="Investment",
-       y=investment_by_business_type.index,
-       orientation="h",
-       title="<b> INVESTMENT BY BUSINESS TYPE </b>",
-       color_discrete_sequence=["#0083B8"]*len(investment_by_business_type),
-       template="plotly_white",
-    )
-    fig_investment.update_layout(
-     plot_bgcolor="rgba(0,0,0,0)",
-     font=dict(color="black"),
-     yaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show y-axis grid and set its color  
-     paper_bgcolor='rgba(0, 0, 0, 0)',  # Set paper background color to transparent
-     xaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show x-axis grid and set its color
-     )
+    # Selecionar colunas para exibir
+    colunas_disponiveis_fisio = ['FC rep','PA rep','FCmáx polar','FCmáx teste','Teste FC','FCmáx prev.','FC Polar leve','FC Polar mod.','FC Polar méd.','FC Polar forte','FC Polar máx','FCteste leve','FCteste mod.','FCteste méd.','FCteste forte','FCteste máx','FCprev leve','FCprev mod.','FCprev méd.','FCprev forte','FCprev máx']
+    colunas_selecionadas_fisio = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis_fisio, default=colunas_disponiveis_fisio)
 
-    #simple line graph investment by state
-    investment_state=df_selection.groupby(by=["State"]).count()[["Investment"]]
-    fig_state=px.line(
-       investment_state,
-       x=investment_state.index,
-       y="Investment",
-       orientation="v",
-       title="<b> INVESTMENT BY STATE </b>",
-       color_discrete_sequence=["#0083b8"]*len(investment_state),
-       template="plotly_white",
-    )
-    fig_state.update_layout(
-    xaxis=dict(tickmode="linear"),
-    plot_bgcolor="rgba(0,0,0,0)",
-    yaxis=(dict(showgrid=False))
-     )
+    st.write("### Todos os Dados")
+    st.dataframe(tabela_fisio[colunas_selecionadas_fisio])
 
-    left,right,center=st.columns(3)
-    left.plotly_chart(fig_state,use_container_width=True)
-    right.plotly_chart(fig_investment,use_container_width=True)
+    # Mostrar os dados do aluno selecionado com as colunas selecionadas
+    st.write("### Dados do Aluno Selecionado")
+    st.dataframe(aluno_data_fisio[['Nome'] + colunas_selecionadas_fisio])
+
+    # Visualização com Plotly para o aluno selecionado, com colunas específicas
+    colunas_grafico_fisio = ['FC rep', 'PA rep', 'FCmáx polar', 'FCmáx teste', 'Teste FC']
+    if colunas_grafico_fisio:
+        fig_fisio = px.bar(aluno_data_fisio, x='Nome', y=colunas_grafico_fisio, barmode='group', title='Dados Fisiológicos do Aluno')
+        st.plotly_chart(fig_fisio, use_container_width=True)
+
+# Código para Medidas antropométricas
+with tab2:
+    st.success("**Medidas antropométricas**")
+
+    # Carregar dados do Excel
+    tabela_antropo = pd.read_excel('Dados.xlsx', sheet_name='Medidas antropométricas', nrows=350)
+    tabela_antropo = tabela_antropo[['Nome', 'IMC', 'Peso', 'Estatura']]
     
-    with center:
-      #pie chart
-      fig = px.pie(df_selection, values='Rating', names='State', title='RATINGS BY REGIONS')
-      fig.update_layout(legend_title="Regions", legend_y=0.9)
-      fig.update_traces(textinfo='percent+label', textposition='inside')
-      st.plotly_chart(fig, use_container_width=True, theme=theme_plotly)
+    # Converter colunas para tipo numérico
+    for col in tabela_antropo.columns[1:]:
+        tabela_antropo[col] = pd.to_numeric(tabela_antropo[col], errors='coerce')
 
-#function to show current earnings against expected target     
-def Progressbar():
-    st.markdown("""<style>.stProgress > div > div > div > div { background-image: linear-gradient(to right, #99ff99 , #FFFF00)}</style>""",unsafe_allow_html=True,)
-    target=3000000000
-    current=df_selection["Investment"].sum()
-    percent=round((current/target*100))
-    mybar=st.progress(0)
+    # Carregar estilo CSS
+    with open('style.css') as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-    if percent>100:
-        st.subheader("Target done !")
-    else:
-     st.write("you have ",percent, "% " ,"of ", (format(target, 'd')), "TZS")
-     for percent_complete in range(percent):
-        time.sleep(0.1)
-        mybar.progress(percent_complete+1,text=" Target Percentage")
+    # Selecionar aluno
+    selected_aluno_antropo = st.selectbox('Selecione o aluno', tabela_antropo['Nome'].unique())
 
-#menu bar
-def sideBar():
- with st.sidebar:
-    selected=option_menu(
-        menu_title="Main Menu",
-        options=["Home","Progress"],
-        icons=["house","eye"],
-        menu_icon="cast",
-        default_index=0
-    )
- if selected=="Home":
-    #st.subheader(f"Page: {selected}")
-    Home()
-    graphs()
- if selected=="Progress":
-    #st.subheader(f"Page: {selected}")
-    Progressbar()
-    graphs()
+    # Filtrar dados do aluno selecionado
+    aluno_data_antropo = tabela_antropo[tabela_antropo['Nome'] == selected_aluno_antropo]
 
-sideBar()
-st.sidebar.image("data/logo1.png",caption="")
+    # Selecionar colunas para exibir
+    colunas_disponiveis_antropo = ['IMC', 'Peso', 'Estatura']
+    colunas_selecionadas_antropo = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis_antropo, default=colunas_disponiveis_antropo)
 
+    # Mostrar todos os dados na tabela completa
+    st.write("### Todos os Dados")
+    st.dataframe(tabela_antropo)
 
-st.subheader('PICK FEATURES TO EXPLORE DISTRIBUTIONS TRENDS BY QUARTILES',)
-#feature_x = st.selectbox('Select feature for x Qualitative data', df_selection.select_dtypes("object").columns)
-feature_y = st.selectbox('Select feature for y Quantitative Data', df_selection.select_dtypes("number").columns)
-fig2 = go.Figure(
-    data=[go.Box(x=df['BusinessType'], y=df[feature_y])],
-    layout=go.Layout(
-        title=go.layout.Title(text="BUSINESS TYPE BY QUARTILES OF INVESTMENT"),
-        plot_bgcolor='rgba(0, 0, 0, 0)',  # Set plot background color to transparent
-        paper_bgcolor='rgba(0, 0, 0, 0)',  # Set paper background color to transparent
-        xaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show x-axis grid and set its color
-        yaxis=dict(showgrid=True, gridcolor='#cecdcd'),  # Show y-axis grid and set its color
-        font=dict(color='#cecdcd'),  # Set text color to black
-    )
-)
-# Display the Plotly figure using Streamlit
-st.plotly_chart(fig2,use_container_width=True)
+    # Mostrar os dados do aluno selecionado com as colunas selecionadas
+    st.write("### Dados do Aluno Selecionado")
+    st.dataframe(aluno_data_antropo[['Nome'] + colunas_selecionadas_antropo])
 
-
-
-#theme
-hide_st_style=""" 
-
-<style>
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
-</style>
-"""
-
-
-
-
-
-
+    # Visualização com Plotly para o aluno selecionado, se houver colunas selecionadas
+    if colunas_selecionadas_antropo:
+        fig_antropo = px.bar(aluno_data_antropo, x='Nome', y=colunas_selecionadas_antropo, barmode='group', title='Dados Antropométricos do Aluno')
+        st.plotly_chart(fig_antropo, use_container_width=True)
