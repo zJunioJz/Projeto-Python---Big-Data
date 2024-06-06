@@ -44,24 +44,60 @@ comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
 # Plotar gráfico "Dados de tempo do aluno"
 if colunas_selecionadas:
-    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de tempo do aluno') 
+    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de tempo do aluno', text_auto=True) 
     fig.update_layout(
         title={
             'text': 'Dados de tempo do aluno',
             'x': 0.45  # Posição centralizada
-        }
+        },
+        bargap=0.60,     
+        bargroupgap=0.1,
+        xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+        ),
+        font=dict(
+            size=15  # Tamanho da fonte
+        )
     )
+    # Ajuste a espessura das colunas
+    for trace in fig.data:
+        trace.width = 0.10  # Espessura das colunas
+
     st.plotly_chart(fig, use_container_width=True)
 
 # Plotar gráfico "Comparação de Tempo do Aluno"
 if colunas_selecionadas:
-    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})')
+    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
     fig.update_layout(
         title={
             'text': f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
             'x': 0.35  # Posição centralizada
-        }
+        },
+        bargap=0.40,
+        bargroupgap=0.1,
+        xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+        ),
+        font=dict(
+            size=15  # Tamanho da fonte
+        )
     )
+    for trace in fig.data:
+        trace.width = 0.30
     st.plotly_chart(fig, use_container_width=True)
 
 st.sidebar.markdown(

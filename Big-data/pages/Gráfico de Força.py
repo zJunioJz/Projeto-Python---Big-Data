@@ -49,12 +49,46 @@ comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
 # Plotar gráficos
 if colunas_selecionadas:
-    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno') 
+    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
+    for trace in fig.data:
+        trace.width = 0.08  # Espessura das colunas
+    fig.update_layout(
+        xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+        ),
+        font=dict(
+            size=15  # Tamanho da fonte
+        )
+    )
+    
     st.plotly_chart(fig, use_container_width=True)
 
 if colunas_selecionadas:
-    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})')
+    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+    fig.update_layout(
+        xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+        ),
+        font=dict(
+            size=15  # Tamanho da fonte
+        )
+    )
     st.plotly_chart(fig, use_container_width=True)
+
 
 # Adicionar a logo no sidebar
 st.sidebar.markdown(

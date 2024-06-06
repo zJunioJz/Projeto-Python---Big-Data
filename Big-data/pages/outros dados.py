@@ -19,16 +19,34 @@ fig.update_traces(
     textposition='inside',
     textinfo='percent+label'
 )
+fig.update_layout(
+        font=dict(
+            size=15  # Tamanho da fonte
+        )
+    )
 st.plotly_chart(fig, use_container_width=True)
 
 color_discrete_map = {'M': 'Blue', 'F': 'pink'}
 fig_sexo = px.histogram(df, x='Turma',nbins=30,color='Sexo',title='Distribuição do sexo por turma',
-                        color_discrete_map=color_discrete_map)
+                        color_discrete_map=color_discrete_map, text_auto=True)
 fig_sexo.update_layout(
     plot_bgcolor='white',
     xaxis_title='Sexo',
     yaxis_title='Frequência',
-    bargap=0.1 
+    bargap=0.1,
+    xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+      ),
+      font=dict(
+            size=15  # Tamanho da fonte
+        )
 )
 st.plotly_chart(fig_sexo, use_container_width=True)
 

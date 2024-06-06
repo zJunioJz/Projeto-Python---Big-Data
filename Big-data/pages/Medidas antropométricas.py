@@ -44,12 +44,33 @@ st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
 
 # Visualização com Plotly para o aluno selecionado, se houver colunas selecionadas
 if colunas_selecionadas:
-    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='')
+    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='', text_auto=True)
     fig.update_layout(
         title={
             'text': f'Medidas antropométricas do aluno ({selected_aluno})',
             'x': 0.45  # Posição centralizada
-        }
+        },
+        bargap=0.60,     
+        bargroupgap=0.1
+    )
+    
+    # Ajuste a espessura das colunas
+    for trace in fig.data:
+        trace.width = 0.05  # Espessura das colunas
+        fig.update_layout(
+        xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+        ),
+        font=dict(
+            size=15  # Tamanho da fonte
+        )
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -59,7 +80,18 @@ fig_scatter.update_layout(
     title={
         'text': 'Relação entre IMC e Peso',
         'x': 0.5  # Posição centralizada
-    }
+        
+    },
+    xaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo x
+            )
+        ),
+        yaxis=dict(
+            tickfont=dict(
+                size=20  # Tamanho da fonte para o eixo y
+            )
+        )
 )
 st.plotly_chart(fig_scatter, use_container_width=True)
 
