@@ -2,27 +2,23 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Carregar dados do Excel
+
 tabela = pd.read_excel('Gráfico atualizado.xlsx', sheet_name='Aptidão Física (2)', nrows=350)
 tabela = tabela[['Nome', 'Turma','Velocidade / aceleração','Tempo de reação direita','Tempo de reação esquerda']]
 
-# Configurar layout da página
+
 st.set_page_config(page_title="Home", page_icon="", layout="wide")
 st.success("Gráfico de Tempo ")
 
-# Selecionar turma
 selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
 with open('style.css') as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Filtrar dados da turma selecionada
 turma_data = tabela[tabela['Turma'] == selected_turma]
 
-# Selecionar aluno dentro da turma selecionada
 selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
-# Filtrar dados do aluno selecionado
 aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
 colunas_disponiveis = ['Velocidade / aceleração', 'Tempo de reação direita','Tempo de reação esquerda']
@@ -54,7 +50,7 @@ if colunas_selecionadas:
         bargroupgap=0.1,
         xaxis=dict(
             tickfont=dict(
-                size=20  # Tamanho da fonte para o eixo x
+                size=20  
             )
         ),
         yaxis=dict(
@@ -63,12 +59,12 @@ if colunas_selecionadas:
             )
         ),
         font=dict(
-            size=15  # Tamanho da fonte
+            size=15  
         )
     )
-    # Ajuste a espessura das colunas
+
     for trace in fig.data:
-        trace.width = 0.10  # Espessura das colunas
+        trace.width = 0.10  
 
     st.plotly_chart(fig, use_container_width=True)
 
@@ -89,7 +85,7 @@ if colunas_selecionadas:
         ),
         yaxis=dict(
             tickfont=dict(
-                size=20  # Tamanho da fonte para o eixo y
+                size=20  
             )
         ),
         font=dict(
