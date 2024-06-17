@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 
-tabela = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/pages/Gráfico atualizado.xlsx', sheet_name='Aptidão Física', nrows=350)
+tabela = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/Gráfico atualizado.xlsx', sheet_name='Aptidão Física', nrows=350)
 tabela = tabela[['Nome', 'Turma', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2']]
 
 st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
