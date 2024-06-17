@@ -3,16 +3,16 @@ import pandas as pd
 import plotly.express as px
 
 
-tabela = pd.read_excel('Gráfico atualizado.xlsx', sheet_name='Aptidão Física (2)', nrows=350)
+tabela = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/pages/Gráfico atualizado.xlsx', sheet_name='Aptidão Física (2)', nrows=350)
 tabela = tabela[['Nome', 'Turma','Velocidade / aceleração','Tempo de reação direita','Tempo de reação esquerda']]
 
-
+st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 st.set_page_config(page_title="Home", page_icon="", layout="wide")
 st.success("Gráfico de Tempo ")
 
 selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
-with open('style.css') as f:
+with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 turma_data = tabela[tabela['Turma'] == selected_turma]
@@ -114,5 +114,3 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
-
-st.sidebar.image("logo.png", use_column_width=True)

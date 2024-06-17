@@ -3,10 +3,10 @@ import pandas as pd
 import plotly.express as px
 
 
-tabela = pd.read_excel('Gráfico atualizado.xlsx', sheet_name='Aptidão Física', nrows=350)
+tabela = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/pages/Gráfico atualizado.xlsx', sheet_name='Aptidão Física', nrows=350)
 tabela = tabela[['Nome', 'Turma', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2']]
 
-
+st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 st.set_page_config(page_title="Home", page_icon="", layout="wide")
 st.success("Gráfico de força ")
 
@@ -14,7 +14,7 @@ st.success("Gráfico de força ")
 selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
 
-with open('style.css') as f:
+with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
@@ -109,7 +109,4 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
-
-st.sidebar.image("logo.png", use_column_width=True)
-
 #usar para rodar > python -m streamlit run Home.py

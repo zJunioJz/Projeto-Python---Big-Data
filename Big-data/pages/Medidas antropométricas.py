@@ -2,17 +2,18 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-tabela = pd.read_excel('Gráfico atualizado.xlsx', sheet_name='Medidas antropométricas', nrows=350)
+tabela = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/pages/Gráfico atualizado.xlsx', sheet_name='Medidas antropométricas', nrows=350)
 tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura']]
 tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
 tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
 tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
 
+st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 st.set_page_config(page_title="Home", page_icon="", layout="wide")
 
 st.success("**Medidas antropométricas**")
 
-with open('style.css') as f:
+with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
@@ -101,5 +102,3 @@ st.sidebar.markdown(
     """,
     unsafe_allow_html=True
 )
-
-st.sidebar.image("logo.png", use_column_width=True)
