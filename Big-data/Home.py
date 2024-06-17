@@ -24,7 +24,7 @@ st.sidebar.markdown(
 )
 
 
-st.sidebar.image("Big-data\logo.png", use_column_width=True)
+st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 st.success("**Medidas Fisiológicas**")
 
 # Adiciona um carregador de arquivos na barra lateral
