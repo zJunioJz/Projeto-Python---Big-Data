@@ -7,7 +7,6 @@ tabela = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/Gráfico a
 tabela = tabela[['Nome', 'Turma', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2']]
 
 st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
-st.set_page_config(page_title="Home", page_icon="", layout="wide")
 st.success("Gráfico de força ")
 
 
