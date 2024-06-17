@@ -3,11 +3,11 @@ import pandas as pd
 import plotly.express as px
 
 
-df = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/pages/Gráfico atualizado.xlsx', sheet_name='Dados Cadastrais', nrows=351)
+df = pd.read_excel('/mount/src/projeto-python---big-data/Big-data/Gráfico atualizado.xlsx', sheet_name='Dados Cadastrais', nrows=351)
 df = df[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
 
 
-st.set_page_config(page_title="Home", page_icon="", layout="wide")
+st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 st.success("Outros gráficos ")
 
 
