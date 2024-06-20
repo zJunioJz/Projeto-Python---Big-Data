@@ -37,7 +37,7 @@ if uploaded_file is not None:
     for col in tabela_fisio.columns[2:]:
         tabela_fisio[col] = pd.to_numeric(tabela_fisio[col], errors='coerce')
 
-    with open('style.css') as f:
+    with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     selected_turma = st.selectbox('Selecione a Turma', tabela_fisio['Turma'].unique())
