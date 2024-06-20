@@ -42,24 +42,36 @@ if uploaded_file:
 
     st.success("**Medidas Fisiológicas**")
 
-    # Seleção da turma e do aluno
+    # Adiciona um carregador de arquivos na barra lateral
+uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
+
+if uploaded_file is not None:
+    tabela_fisio = pd.read_excel(uploaded_file, sheet_name='Medidas fisiológicas', nrows=350)
+    tabela_fisio = tabela_fisio[['Turma', 'Nome', 'FC rep', 'PA rep', 'FCmáx polar', 'FCmáx teste', 'Teste FC', 'FCmáx prev.', 'FC Polar leve', 'FC Polar mod.', 'FC Polar méd.', 'FC Polar forte', 'FC Polar máx', 'FCteste leve', 'FCteste mod.', 'FCteste méd.', 'FCteste forte', 'FCteste máx', 'FCprev leve', 'FCprev mod.', 'FCprev méd.', 'FCprev forte', 'FCprev máx']]
+
+    for col in tabela_fisio.columns[2:]:
+        tabela_fisio[col] = pd.to_numeric(tabela_fisio[col], errors='coerce')
+
+    with open('style.css') as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
     selected_turma = st.selectbox('Selecione a Turma', tabela_fisio['Turma'].unique())
+
     alunos_turma = tabela_fisio[tabela_fisio['Turma'] == selected_turma]['Nome'].unique()
+
     selected_aluno = st.selectbox('Selecione o aluno', alunos_turma)
 
-    # Dados do aluno selecionado
     aluno_data_fisio = tabela_fisio[(tabela_fisio['Turma'] == selected_turma) & (tabela_fisio['Nome'] == selected_aluno)]
 
-    # Seleção das colunas a serem exibidas
     colunas_disponiveis_fisio = ['FC rep', 'PA rep', 'FCmáx polar', 'FCmáx teste', 'Teste FC', 'FCmáx prev.', 'FC Polar leve', 'FC Polar mod.', 'FC Polar méd.', 'FC Polar forte', 'FC Polar máx', 'FCteste leve', 'FCteste mod.', 'FCteste méd.', 'FCteste forte', 'FCteste máx', 'FCprev leve', 'FCprev mod.', 'FCprev méd.', 'FCprev forte', 'FCprev máx']
     colunas_selecionadas_fisio = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis_fisio, default=colunas_disponiveis_fisio)
 
-    # Exibir os dados
     st.write("### Todos os Dados")
     st.dataframe(tabela_fisio[['Nome'] + colunas_selecionadas_fisio])
 
     st.write("### Dados do Aluno Selecionado")
     st.dataframe(aluno_data_fisio[['Nome'] + colunas_selecionadas_fisio])
+
 
     # Gerar gráficos
     colunas_grafico_fisio = ['FC rep', 'PA rep', 'FCmáx polar', 'FCmáx teste', 'Teste FC']
