@@ -200,10 +200,5 @@ if uploaded_file is not None:
         )
 
         st.plotly_chart(fig_comparacao, use_container_width=True)
-
-    # Salvar os dados em um arquivo CSV localmente
-    save_path = "dados_fisiologicos.csv"
-    tabela_fisio.to_csv(save_path, index=False)
-    st.success(f"Dados salvos em: {save_path}")
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
