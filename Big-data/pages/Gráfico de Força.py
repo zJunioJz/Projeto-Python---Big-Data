@@ -43,9 +43,13 @@ if uploaded_file is not None:
     
     # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
     colunas_necessarias = [
-        'Nome', 'Turma', 'Salto horizontal 1', 
-        'Salto horizontal 2', 'Salto horizontal 3',
-        'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3'
+        'Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 
+        'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 
+        'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 
+        'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 
+        'Indice de resistencia de foça estática da preensão manual', 
+        'Diâmetro mão esquerda', 'Diâmetro mão direita', 'Diametro da barra', 
+        'tempo de sustentação'
     ]
 
     colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
@@ -135,17 +139,15 @@ if uploaded_file is not None:
                     
                     # Atualiza o layout do gráfico para aumentar a altura e garantir que ambos os conjuntos de barras sejam visíveis
                     fig.update_layout(
-                        title={
-                            'text': f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
-                            'x': 0.35  # Centraliza o título
-                        },
                         xaxis=dict(
-                            tickfont=dict(size=20)  # Tamanho da fonte para o eixo x
+                            tickfont=dict(size=20),
+                            title='Métrica'
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=20)  # Tamanho da fonte para o eixo y
+                            tickfont=dict(size=20),
+                            title='Valor'
                         ),
-                        font=dict(size=15),  # Tamanho da fonte
+                        font=dict(size=15),
                         height=800  # Define a altura do gráfico
                     )
                     st.plotly_chart(fig, use_container_width=True)
