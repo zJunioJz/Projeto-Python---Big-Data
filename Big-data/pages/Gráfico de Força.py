@@ -159,10 +159,7 @@ if uploaded_file is not None:
                         font=dict(
                             size=15  
                         ),
-                        xaxis_title='Métrica',
-                        yaxis_title='Valor',
-                        legend_title='Grupo',
-                        height=600,  # Define a altura do gráfico
+                        height=800,  
                         width=800  # Ajusta a largura se necessário
                     )
                     st.plotly_chart(fig, use_container_width=True)
