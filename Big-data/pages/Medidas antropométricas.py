@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # Configuração da página
-st.set_page_config(page_title="Medidas Antropométricas", page_icon="", layout="wide")
+st.set_page_config(page_title="Desempenho Acadêmico", page_icon="", layout="wide")
 
 # Estilização da barra lateral
 st.sidebar.markdown(
@@ -29,37 +29,44 @@ st.sidebar.markdown(
 st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 
 # Mensagem de sucesso
-st.success("**Medidas antropométricas**")
+st.success("Acompanhamento do Desempenho Acadêmico")
 
 # Carregador de arquivos na barra lateral
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura do arquivo Excel
+    # Leitura dos dados cadastrais
     try:
-        medidas_antropometricas = pd.read_excel(uploaded_file, sheet_name='Medidas antropométricas', nrows=350)
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
+        dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
+        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
-        st.error(f"Erro ao ler o arquivo Excel: {e}")
+        st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
+    
+    # Leitura da planilha de desempenho acadêmico
+    try:
+        desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
+        desempenho_academico.columns = desempenho_academico.columns.str.strip()
+    except Exception as e:
+        st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
+        st.stop()
+    
+    # Definir as colunas necessárias
+    colunas_necessarias = [
+        'Nome', 'Desempenho acadêmico 1 bimestre',
+        'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
+        'Desempenho acadêmico 4 bimestre'
+    ]
 
-    # Verificar e limpar nomes das colunas
-    medidas_antropometricas.columns = medidas_antropometricas.columns.str.strip()
-    dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-
-    # Verificar se a coluna 'Nome' está presente em ambas as planilhas
-    if 'Nome' not in medidas_antropometricas.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
-        st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
+    # Filtrar as colunas presentes na tabela
+    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in desempenho_academico.columns]
+    
+    if len(colunas_presentes) != len(colunas_necessarias):
+        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
-
-        # Seleciona as colunas necessárias
-        tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']]
-        tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
-        tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
-        tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
-        tabela['Envergadura'] = pd.to_numeric(tabela['Envergadura'], errors='coerce')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
@@ -81,64 +88,65 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = ['IMC', 'Peso', 'Estatura', 'Envergadura']
-        colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
+        colunas_selecionadas = [
+            'Desempenho acadêmico 1 bimestre',
+            'Desempenho acadêmico 2 bimestre',
+            'Desempenho acadêmico 3 bimestre',
+            'Desempenho acadêmico 4 bimestre'
+        ]
+        
+        # Converte colunas selecionadas para numérico, forçando erros a NaN
+        for coluna in colunas_selecionadas:
+            if coluna in aluno_data.columns and coluna in turma_data.columns:
+                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            else:
+                st.error(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
+                continue
 
-        st.write("### Todos os Dados")
-        st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
+        # Calcula a média da turma para cada bimestre
+        turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
+        turma_mean.columns = ['Bimestre', 'Média da Turma']
 
-        st.write("### Dados do Aluno Selecionado")
-        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        # Prepara os dados do aluno para a comparação
+        aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Nota do Aluno')
+        aluno_data_selecionadas['Nome'] = selected_aluno
 
-        # Gráfico das medidas antropométricas do aluno
+        # Combina os dados do aluno e a média da turma
+        comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
+
+        # Exibe os dados cadastrais do aluno selecionado
+        st.write(f"### Dados Cadastrais do Aluno: {selected_aluno}")
+        dados_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]
+        st.dataframe(dados_aluno)
+
+        # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
-            fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='', text_auto=True)
-            fig.update_layout(
-                title={
-                    'text': f'Medidas antropométricas do aluno ({selected_aluno})',
-                    'x': 0.45  # Posição centralizada
-                },
-                bargap=0.60,     
-                bargroupgap=0.1,
-                xaxis=dict(
-                    tickfont=dict(
-                        size=20  # Tamanho da fonte para o eixo x
+            try:
+                if comparacao_df.empty:
+                    st.error("Nenhum dado disponível para a comparação com a média da turma.")
+                else:
+                    fig = px.bar(comparacao_df, x='Bimestre', y=['Nota do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig.update_layout(
+                        title={
+                            'text': f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                            'x': 0.5  # Centraliza o título
+                        },
+                        bargap=0.4,  # Ajusta o espaço entre as barras
+                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+                        xaxis=dict(
+                            tickfont=dict(size=14),
+                            title='Bimestre'
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(size=14),
+                            title='Nota'
+                        ),
+                        font=dict(size=12)
                     )
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        size=20  # Tamanho da fonte para o eixo y
-                    )
-                ),
-                font=dict(
-                    size=15  # Tamanho da fonte
-                )
-            )
-
-            for trace in fig.data:
-                trace.width = 0.05  # Espessura das colunas
-
-            st.plotly_chart(fig, use_container_width=True)
-
-        # Gráfico de dispersão IMC vs Peso
-        fig_scatter = px.scatter(turma_data, x='IMC', y='Peso', title='Relação entre IMC e Peso', color='Nome', hover_name='Nome')
-        fig_scatter.update_layout(
-            title={
-                'text': 'Relação entre IMC e Peso',
-                'x': 0.5  # Posição centralizada
-            },
-            xaxis=dict(
-                tickfont=dict(
-                    size=20  # Tamanho da fonte para o eixo x
-                )
-            ),
-            yaxis=dict(
-                tickfont=dict(
-                    size=20  # Tamanho da fonte para o eixo y
-                )
-            )
-        )
-        st.plotly_chart(fig_scatter, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
