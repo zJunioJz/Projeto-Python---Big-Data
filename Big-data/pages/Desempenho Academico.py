@@ -46,7 +46,7 @@ if uploaded_file is not None:
     
     colunas_necessarias = [
         'Nome', 'Turma', 'teste1',
-        'teste2', 'teste3',
+        'teste2', 'teste3 $',
         'teste4'
     ]
 
@@ -80,7 +80,7 @@ if uploaded_file is not None:
         # Seleciona as colunas para exibir
         colunas_selecionadas = [
         'teste1',
-        'teste2', 'teste3',
+        'teste2', 'teste3 $',
         'teste4'
         ]
         
