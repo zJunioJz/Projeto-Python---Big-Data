@@ -41,6 +41,9 @@ if uploaded_file is not None:
     # Verificar e limpar nomes das colunas
     tabela.columns = tabela.columns.str.strip()
     
+    # Exibir colunas disponíveis para depuração
+    st.write("Colunas disponíveis no arquivo Excel:", tabela.columns.tolist())
+    
     colunas_necessarias = [
         'Nome', 'Turma', 'Desempenho acadêmico 1º bimestre',
         'Desempenho acadêmico 2º bimestre', 'Desempenho acadêmico 3º bimestre',
@@ -50,8 +53,8 @@ if uploaded_file is not None:
     # Filtrar as colunas presentes na tabela
     colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
     
-    if not colunas_presentes:
-        st.error("Nenhuma das colunas necessárias está presente no arquivo.")
+    if len(colunas_presentes) != len(colunas_necessarias):
+        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in tabela.columns]}")
     else:
         tabela = tabela[colunas_presentes]
 
@@ -84,8 +87,12 @@ if uploaded_file is not None:
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            if coluna in aluno_data.columns and coluna in turma_data.columns:
+                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            else:
+                st.error(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
+                continue
 
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
