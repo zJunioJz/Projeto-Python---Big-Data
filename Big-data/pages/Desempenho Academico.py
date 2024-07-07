@@ -75,27 +75,27 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
-        colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
+        colunas_selecionadas = [
+            'Desempenho acadêmico 1º bimestre',
+            'Desempenho acadêmico 2º bimestre',
+            'Desempenho acadêmico 3º bimestre',
+            'Desempenho acadêmico 4º bimestre'
+        ]
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
             turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
 
-        st.write("### Todos os Dados")
-        st.dataframe(tabela[['Nome'] + colunas_selecionadas])
-
-        st.write("### Dados do Aluno Selecionado")
-        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
-
-        # Calcula a média da turma
+        # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
         turma_mean.columns = ['Bimestre', 'Média da Turma']
 
         # Prepara os dados do aluno para a comparação
-        aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Valor do Aluno')
+        aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Nota do Aluno')
         aluno_data_selecionadas['Nome'] = selected_aluno
+
+        # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
@@ -104,7 +104,7 @@ if uploaded_file is not None:
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
-                    fig = px.bar(comparacao_df, x='Bimestre', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig = px.bar(comparacao_df, x='Bimestre', y=['Nota do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                     fig.update_layout(
                         title={
                             'text': f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
