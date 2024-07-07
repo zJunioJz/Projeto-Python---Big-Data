@@ -144,9 +144,7 @@ if uploaded_file is not None:
                             tickfont=dict(size=20),
                             title='Valor'
                         ),
-                        font=dict(size=15),
-                        height=800,  # Define a altura do gráfico
-                        width=1000  # Ajusta a largura se necessário
+                        font=dict(size=15)
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
