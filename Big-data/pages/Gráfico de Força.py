@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura do arquivo Excel
     tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=350)
-    tabela = tabela[['Nome', 'Turma', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2']]
+    tabela = tabela[['Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda','Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']]
 
     # Aplica o estilo do arquivo CSS
     try:
@@ -59,7 +59,7 @@ if uploaded_file is not None:
     aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
     # Seleciona as colunas para exibir
-    colunas_disponiveis = ['Salto horizontal 1', 'Salto horizontal 2', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2']
+    colunas_disponiveis = ['Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda', 'Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']
     colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
     st.write("### Todos os Dados")
