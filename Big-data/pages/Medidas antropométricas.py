@@ -42,15 +42,8 @@ if uploaded_file is not None:
         st.error(f"Erro ao ler o arquivo Excel: {e}")
         st.stop()
 
-    # Verifica se todas as colunas necessárias estão presentes
-    colunas_necessarias = ['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']
-    colunas_faltando = [col for col in colunas_necessarias if col not in tabela.columns]
-
-    if colunas_faltando:
-        st.error(f"As seguintes colunas estão faltando no arquivo Excel: {', '.join(colunas_faltando)}")
-        st.stop()
-
-    tabela = tabela[colunas_necessarias]
+    # Seleciona as colunas necessárias
+    tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']]
     tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
     tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
     tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
