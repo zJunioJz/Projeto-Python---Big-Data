@@ -79,7 +79,7 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = colunas_necessarias[2:]  # Exclui 'Nome' e 'Turma'
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
         # Converte colunas selecionadas para numérico, forçando erros a NaN
