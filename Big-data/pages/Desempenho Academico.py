@@ -41,9 +41,6 @@ if uploaded_file is not None:
     # Verificar e limpar nomes das colunas
     tabela.columns = tabela.columns.str.strip()
     
-    # Exibir colunas disponíveis para depuração
-    st.write("Colunas disponíveis no arquivo Excel:", tabela.columns.tolist())
-    
     colunas_necessarias = [
         'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
         'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
