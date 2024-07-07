@@ -38,6 +38,7 @@ if uploaded_file is not None:
     # Leitura dos dados cadastrais
     try:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
+        dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
@@ -45,12 +46,13 @@ if uploaded_file is not None:
     
     # Leitura da planilha de desempenho acadêmico
     try:
-        tabela = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
-        tabela.columns = tabela.columns.str.strip()
+        desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
+        desempenho_academico.columns = desempenho_academico.columns.str.strip()
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
     
+    # Definir as colunas necessárias
     colunas_necessarias = [
         'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
         'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
@@ -58,12 +60,13 @@ if uploaded_file is not None:
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
+    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in desempenho_academico.columns]
     
     if len(colunas_presentes) != len(colunas_necessarias):
-        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in tabela.columns]}")
+        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
     else:
-        tabela = tabela[colunas_presentes]
+        # Mesclar as duas planilhas com base na coluna 'Nome'
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
