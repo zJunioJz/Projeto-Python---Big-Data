@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura do arquivo Excel
     tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=350)
-    tabela = tabela[['Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda','Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']]
+    tabela = tabela[['Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda', 'Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']]
 
     # Aplica o estilo do arquivo CSS
     try:
@@ -80,41 +80,20 @@ if uploaded_file is not None:
     # Plotar gráficos
     if colunas_selecionadas:
         fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
-        for trace in fig.data:
-            trace.width = 0.08  
+        fig.update_traces(width=0.08)
         fig.update_layout(
-            xaxis=dict(
-                tickfont=dict(
-                    size=20  
-                )
-            ),
-            yaxis=dict(
-                tickfont=dict(
-                    size=20  
-                )
-            ),
-            font=dict(
-                size=15  
-            )
+            xaxis=dict(tickfont=dict(size=20)),
+            yaxis=dict(tickfont=dict(size=20)),
+            font=dict(size=15)
         )
         st.plotly_chart(fig, use_container_width=True)
 
     if colunas_selecionadas:
         fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
         fig.update_layout(
-            xaxis=dict(
-                tickfont=dict(
-                    size=20  
-                )
-            ),
-            yaxis=dict(
-                tickfont=dict(
-                    size=20  
-                )
-            ),
-            font=dict(
-                size=15  
-            )
+            xaxis=dict(tickfont=dict(size=20)),
+            yaxis=dict(tickfont=dict(size=20)),
+            font=dict(size=15)
         )
         st.plotly_chart(fig, use_container_width=True)
 
