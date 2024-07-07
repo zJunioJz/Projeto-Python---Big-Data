@@ -41,6 +41,7 @@ if uploaded_file is not None:
     tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
     tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
     tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
+    tabela['Envergadura'] = pd.to_numeric(tabela['Envergadura'], errors='coerce')
 
     # Aplica o estilo do arquivo CSS
     try:
@@ -62,7 +63,7 @@ if uploaded_file is not None:
     aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
     # Seleciona as colunas para exibir
-    colunas_disponiveis = ['IMC', 'Peso', 'Estatura']
+    colunas_disponiveis = ['IMC', 'Peso', 'Estatura', 'Envergadura']
     colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
     st.write("### Todos os Dados")
