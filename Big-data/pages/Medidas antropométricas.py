@@ -36,8 +36,21 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 
 if uploaded_file is not None:
     # Leitura do arquivo Excel
-    tabela = pd.read_excel(uploaded_file, sheet_name='Medidas antropométricas', nrows=350)
-    tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura']]
+    try:
+        tabela = pd.read_excel(uploaded_file, sheet_name='Medidas antropométricas', nrows=350)
+    except Exception as e:
+        st.error(f"Erro ao ler o arquivo Excel: {e}")
+        st.stop()
+
+    # Verifica se todas as colunas necessárias estão presentes
+    colunas_necessarias = ['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']
+    colunas_faltando = [col for col in colunas_necessarias if col not in tabela.columns]
+
+    if colunas_faltando:
+        st.error(f"As seguintes colunas estão faltando no arquivo Excel: {', '.join(colunas_faltando)}")
+        st.stop()
+
+    tabela = tabela[colunas_necessarias]
     tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
     tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
     tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
@@ -67,7 +80,7 @@ if uploaded_file is not None:
     colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
     st.write("### Todos os Dados")
-    st.dataframe(tabela[['Nome']+colunas_selecionadas])
+    st.dataframe(tabela[['Nome'] + colunas_selecionadas])
 
     st.write("### Dados do Aluno Selecionado")
     st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
