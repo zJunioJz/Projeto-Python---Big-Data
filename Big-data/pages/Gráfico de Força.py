@@ -135,16 +135,18 @@ if uploaded_file is not None:
                     
                     # Atualiza o layout do gráfico para aumentar a altura e garantir que ambos os conjuntos de barras sejam visíveis
                     fig.update_layout(
+                        title={
+                            'text': f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                            'x': 0.35  # Centraliza o título
+                        },
                         xaxis=dict(
-                            tickfont=dict(size=20),
-                            title='Métrica'
+                            tickfont=dict(size=20)  # Tamanho da fonte para o eixo x
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=20),
-                            title='Valor'
+                            tickfont=dict(size=20)  # Tamanho da fonte para o eixo y
                         ),
-                        font=dict(size=15),
-                        
+                        font=dict(size=15),  # Tamanho da fonte
+                        height=800  # Define a altura do gráfico
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
