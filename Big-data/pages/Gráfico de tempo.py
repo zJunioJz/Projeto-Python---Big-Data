@@ -144,7 +144,7 @@ if uploaded_file is not None:
                             'text': f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
                             'x': 0.5  # Centraliza o título
                         },
-                        bargap=0.3,  # Ajusta o espaço entre as barras
+                        bargap=0.4,  # Ajusta o espaço entre as barras
                         bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
                             tickfont=dict(size=14),
