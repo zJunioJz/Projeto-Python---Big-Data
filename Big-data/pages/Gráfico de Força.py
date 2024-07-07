@@ -103,8 +103,6 @@ if uploaded_file is not None:
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
         # Adiciona a coluna 'Grupo' para as cores das barras
-        aluno_data_selecionadas['Grupo'] = 'Aluno'
-        turma_mean['Grupo'] = 'Média da Turma'
         comparacao_df['Grupo'] = comparacao_df['Métrica'].apply(lambda x: 'Aluno' if comparacao_df[comparacao_df['Métrica'] == x]['Nome'].iloc[0] == selected_aluno else 'Média da Turma')
 
         # Plotar gráficos
@@ -137,7 +135,7 @@ if uploaded_file is not None:
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
-                    fig = px.bar(comparacao_df, x='Métrica', y=['Média da Turma'], barmode='group', color='Grupo', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', color='Grupo', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                     
                     # Atualiza o layout do gráfico para aumentar a altura e garantir que ambos os conjuntos de barras sejam visíveis
                     fig.update_layout(
