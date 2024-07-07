@@ -37,28 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura do arquivo Excel
     tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física (2)', nrows=350)
-    
-    # Colunas esperadas e adaptáveis
-    colunas_necessarias = [
-        'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
-        'Tempo de reação direita', 'Tempo de reação 1 direita', 
-        'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
-        'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 
-        'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3'
-    ]
-    
-    # Verificar quais colunas estão presentes no arquivo
-    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
-    
-    if 'Turma' not in colunas_presentes:
-        st.warning("Coluna 'Turma' não encontrada no arquivo. A funcionalidade de seleção de turma não estará disponível.")
-    
-    # Excluir colunas não presentes
-    tabela = tabela[colunas_presentes]
-    
-    # Remove linhas com valores ausentes nas colunas de interesse
-    colunas_interesse = [coluna for coluna in colunas_presentes if coluna != 'Nome' and coluna != 'Turma']
-    tabela = tabela.dropna(subset=colunas_interesse)
+    tabela = tabela[['Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação 1 direita', 'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3']]
 
     # Aplica o estilo do arquivo CSS
     try:
@@ -67,14 +46,12 @@ if uploaded_file is not None:
     except FileNotFoundError:
         st.error("Arquivo de estilo não encontrado.")
 
-    # Seleciona a turma, se disponível
-    if 'Turma' in tabela.columns:
-        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
-        turma_data = tabela[tabela['Turma'] == selected_turma]
-    else:
-        selected_turma = None
-        turma_data = tabela
-    
+    # Seleciona a turma
+    selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+
+    # Filtra alunos da turma selecionada
+    turma_data = tabela[tabela['Turma'] == selected_turma]
+
     # Seleciona o aluno
     selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
@@ -82,7 +59,7 @@ if uploaded_file is not None:
     aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
     # Seleciona as colunas para exibir
-    colunas_disponiveis = [coluna for coluna in colunas_presentes if coluna != 'Nome' and coluna != 'Turma']
+    colunas_disponiveis = ['Shuttle run', 'Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação 1 direita', 'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3', 'tempo de sustentação']
     colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
     st.write("### Todos os Dados")
@@ -102,24 +79,31 @@ if uploaded_file is not None:
 
     # Plotar gráfico "Dados de tempo do aluno"
     if colunas_selecionadas:
-        fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Tempo do Aluno', text_auto=True)
+        fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de tempo do aluno', text_auto=True)
         fig.update_layout(
             title={
-                'text': 'Dados de Tempo do Aluno',
-                'x': 0.5  # Centraliza o título
+                'text': 'Dados de tempo do aluno',
+                'x': 0.45  # Posição centralizada
             },
-            bargap=0.3,  # Ajusta o espaço entre as barras
-            bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+            bargap=0.60,     
+            bargroupgap=0.1,
             xaxis=dict(
-                tickfont=dict(size=14),
-                title='Nome'
+                tickfont=dict(
+                    size=20  
+                )
             ),
             yaxis=dict(
-                tickfont=dict(size=14),
-                title='Tempo'
+                tickfont=dict(
+                    size=20  
+                )
             ),
-            font=dict(size=12)
+            font=dict(
+                size=15  
+            )
         )
+
+        for trace in fig.data:
+            trace.width = 0.10  
 
         st.plotly_chart(fig, use_container_width=True)
 
@@ -129,20 +113,26 @@ if uploaded_file is not None:
         fig.update_layout(
             title={
                 'text': f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
-                'x': 0.5  # Centraliza o título
+                'x': 0.35  # Posição centralizada
             },
-            bargap=0.3,  # Ajusta o espaço entre as barras
-            bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+            bargap=0.40,
+            bargroupgap=0.1,
             xaxis=dict(
-                tickfont=dict(size=14),
-                title='Métrica'
+                tickfont=dict(
+                    size=20  # Tamanho da fonte para o eixo x
+                )
             ),
             yaxis=dict(
-                tickfont=dict(size=14),
-                title='Tempo'
+                tickfont=dict(
+                    size=20  
+                )
             ),
-            font=dict(size=12)
+            font=dict(
+                size=15  # Tamanho da fonte
+            )
         )
+        for trace in fig.data:
+            trace.width = 0.30
         st.plotly_chart(fig, use_container_width=True)
 
 else:
