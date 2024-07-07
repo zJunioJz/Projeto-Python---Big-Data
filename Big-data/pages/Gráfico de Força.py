@@ -102,11 +102,6 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
-        # Adiciona a coluna 'Grupo' para as cores das barras
-        aluno_data_selecionadas['Grupo'] = 'Aluno'
-        turma_mean['Grupo'] = 'Média da Turma'
-        comparacao_df['Grupo'] = comparacao_df['Métrica'].apply(lambda x: 'Aluno' if comparacao_df[comparacao_df['Métrica'] == x]['Nome'].iloc[0] == selected_aluno else 'Média da Turma')
-
         # Plotar gráficos
         if colunas_selecionadas:
             try:
@@ -119,14 +114,20 @@ if uploaded_file is not None:
                     # Atualiza o layout do gráfico para ajustar o espaçamento das barras
                     fig.update_layout(
                         xaxis=dict(
-                            tickfont=dict(size=20)
+                            tickfont=dict(
+                                size=20
+                            )
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=20)
+                            tickfont=dict(
+                                size=20
+                            )
                         ),
-                        font=dict(size=15),
-                        bargap=0.3,  # Aumenta o espaçamento entre as barras
-                        bargroupgap=0.15  # Aumenta o espaçamento entre grupos de barras
+                        font=dict(
+                            size=15
+                        ),
+                        bargap=0.2,  
+                        bargroupgap=0.1
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
@@ -137,20 +138,21 @@ if uploaded_file is not None:
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
-                    fig = px.bar(comparacao_df, x='Métrica', y=['Média da Turma'], barmode='group', color='Grupo', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
-                    
-                    # Atualiza o layout do gráfico para aumentar a altura e garantir que ambos os conjuntos de barras sejam visíveis
+                    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                     fig.update_layout(
                         xaxis=dict(
-                            tickfont=dict(size=20),
-                            title='Métrica'
+                            tickfont=dict(
+                                size=20  
+                            )
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=20),
-                            title='Valor'
+                            tickfont=dict(
+                                size=20  
+                            )
                         ),
-                        font=dict(size=15),
-                        height=800  # Define a altura do gráfico
+                        font=dict(
+                            size=15  
+                        )
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
