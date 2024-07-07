@@ -144,7 +144,7 @@ if uploaded_file is not None:
                             title='Valor'
                         ),
                         font=dict(size=15),
-                        height=800  # Define a altura do gráfico
+                        
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
