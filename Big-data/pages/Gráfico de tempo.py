@@ -55,6 +55,10 @@ if uploaded_file is not None:
     
     # Excluir colunas não presentes
     tabela = tabela[colunas_presentes]
+    
+    # Remove linhas com valores ausentes nas colunas de interesse
+    colunas_interesse = [coluna for coluna in colunas_presentes if coluna != 'Nome' and coluna != 'Turma']
+    tabela = tabela.dropna(subset=colunas_interesse)
 
     # Aplica o estilo do arquivo CSS
     try:
