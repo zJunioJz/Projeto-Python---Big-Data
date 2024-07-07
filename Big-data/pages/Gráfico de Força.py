@@ -36,8 +36,23 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 
 if uploaded_file is not None:
     # Leitura do arquivo Excel
-    tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=350)
-    tabela = tabela[['Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda','Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']]
+    try:
+        tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=350)
+        st.write("Colunas disponíveis:", tabela.columns.tolist())  # Verifique as colunas disponíveis
+    except Exception as e:
+        st.error(f"Erro ao ler o arquivo Excel: {e}")
+        st.stop()
+
+    # Verifica se todas as colunas necessárias estão presentes
+    colunas_necessarias = ['Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda', 'Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']
+    colunas_faltando = [col for col in colunas_necessarias if col not in tabela.columns]
+    
+    if colunas_faltando:
+        st.error(f"Faltam colunas no arquivo Excel: {', '.join(colunas_faltando)}")
+        st.stop()
+
+    # Seleciona as colunas necessárias
+    tabela = tabela[colunas_necessarias]
 
     # Aplica o estilo do arquivo CSS
     try:
@@ -59,7 +74,7 @@ if uploaded_file is not None:
     aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
     # Seleciona as colunas para exibir
-    colunas_disponiveis = ['Abdominal', 'Apoio de frente sobre o solo', 'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 'Índice de resistência de força estática da preensão manual', 'Diâmetro mão esquerda', 'Diâmetro mão direita', 'Diâmetro da barra', 'Tempo de sustentação']
+    colunas_disponiveis = colunas_necessarias[2:]  # Ajusta conforme suas necessidades
     colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
     st.write("### Todos os Dados")
