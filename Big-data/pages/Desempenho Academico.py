@@ -52,7 +52,7 @@ if uploaded_file is not None:
 
     # Filtrar as colunas presentes na tabela
     colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
-    
+
     if len(colunas_presentes) != len(colunas_necessarias):
         st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in tabela.columns]}")
     else:
@@ -79,9 +79,10 @@ if uploaded_file is not None:
 
         # Seleciona as colunas para exibir
         colunas_selecionadas = [
-        'Desempenho acadêmico 1 bimestre',
-        'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
-        'Desempenho acadêmico 4 bimestre'
+            'Desempenho acadêmico 1 bimestre',
+            'Desempenho acadêmico 2 bimestre',
+            'Desempenho acadêmico 3 bimestre',
+            'Desempenho acadêmico 4 bimestre'
         ]
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
