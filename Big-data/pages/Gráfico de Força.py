@@ -102,6 +102,10 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
+        # Cria uma coluna de grupo para as métricas relacionadas ao "Salto Horizontal"
+        aluno_data_selecionadas['Grupo'] = aluno_data_selecionadas['Métrica'].apply(lambda x: 'Salto Horizontal' if 'Salto horizontal' in x else 'Outros')
+        comparacao_df['Grupo'] = comparacao_df['Métrica'].apply(lambda x: 'Salto Horizontal' if 'Salto horizontal' in x else 'Outros')
+
         # Plotar gráficos
         if colunas_selecionadas:
             try:
@@ -126,8 +130,8 @@ if uploaded_file is not None:
                         font=dict(
                             size=15
                         ),
-                        bargap=0.2,  
-                        bargroupgap=0.1
+                        bargap=0.3,  # Aumenta o espaçamento entre as barras
+                        bargroupgap=0.15  # Aumenta o espaçamento entre grupos de barras
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
@@ -138,7 +142,9 @@ if uploaded_file is not None:
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
-                    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], color='Grupo', barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    
+                    # Atualiza o layout do gráfico para aumentar a altura
                     fig.update_layout(
                         xaxis=dict(
                             tickfont=dict(
@@ -152,7 +158,12 @@ if uploaded_file is not None:
                         ),
                         font=dict(
                             size=15  
-                        )
+                        ),
+                        xaxis_title='Métrica',
+                        yaxis_title='Valor',
+                        legend_title='Grupo',
+                        height=600,  # Define a altura do gráfico
+                        width=800  # Ajusta a largura se necessário
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
