@@ -35,11 +35,21 @@ st.success("Acompanhamento do Desempenho Acadêmico")
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura do arquivo Excel
-    tabela = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
+    # Leitura dos dados cadastrais
+    try:
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
+        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
+    except Exception as e:
+        st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
+        st.stop()
     
-    # Verificar e limpar nomes das colunas
-    tabela.columns = tabela.columns.str.strip()
+    # Leitura da planilha de desempenho acadêmico
+    try:
+        tabela = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
+        tabela.columns = tabela.columns.str.strip()
+    except Exception as e:
+        st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
+        st.stop()
     
     colunas_necessarias = [
         'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
@@ -101,6 +111,11 @@ if uploaded_file is not None:
 
         # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
+
+        # Exibe os dados cadastrais do aluno selecionado
+        st.write(f"### Dados Cadastrais do Aluno: {selected_aluno}")
+        dados_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]
+        st.dataframe(dados_aluno)
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
