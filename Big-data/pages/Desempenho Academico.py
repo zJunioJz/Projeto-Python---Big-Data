@@ -45,9 +45,9 @@ if uploaded_file is not None:
     st.write("Colunas disponíveis no arquivo Excel:", tabela.columns.tolist())
     
     colunas_necessarias = [
-        'Nome', 'Turma', 'Desempenho acadêmico 1° bimestre',
-        'Desempenho acadêmico 2° bimestre', 'Desempenho acadêmico 3° bimestre',
-        'Desempenho acadêmico 4° bimestre'
+        'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
+        'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
+        'Desempenho acadêmico 4 bimestre'
     ]
 
     # Filtrar as colunas presentes na tabela
@@ -79,9 +79,9 @@ if uploaded_file is not None:
 
         # Seleciona as colunas para exibir
         colunas_selecionadas = [
-        'Desempenho acadêmico 1° bimestre',
-        'Desempenho acadêmico 2° bimestre', 'Desempenho acadêmico 3° bimestre',
-        'Desempenho acadêmico 4° bimestre'
+        'Desempenho acadêmico 1 bimestre',
+        'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
+        'Desempenho acadêmico 4 bimestre'
         ]
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
