@@ -80,10 +80,6 @@ if uploaded_file is not None:
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
-        # Verifique os dados disponíveis
-        st.write("### Dados Disponíveis")
-        st.write(aluno_data.head())
-
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
@@ -104,7 +100,7 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
-        # Plotar gráfico "Dados de Tempo do Aluno"
+        # Plotar gráfico "Dados de tempo do aluno"
         if colunas_selecionadas:
             try:
                 if aluno_data[colunas_selecionadas].empty:
@@ -116,8 +112,8 @@ if uploaded_file is not None:
                             'text': 'Dados de Tempo do Aluno',
                             'x': 0.5  # Centraliza o título
                         },
-                        bargap=0.4,  # Ajusta o espaço entre as barras
-                        bargroupgap=0.2,  # Ajusta o espaço entre grupos de barras
+                        bargap=0.3,  # Ajusta o espaço entre as barras
+                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
                             tickfont=dict(size=14),
                             title='Nome'
@@ -126,9 +122,12 @@ if uploaded_file is not None:
                             tickfont=dict(size=14),
                             title='Tempo'
                         ),
-                        font=dict(size=12),
-                        margin=dict(l=40, r=20, t=40, b=40)  # Adiciona margens ao redor do gráfico
+                        font=dict(size=12)
                     )
+
+                    for trace in fig.data:
+                        trace.width = 0.10
+
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico do aluno: {e}")
@@ -157,6 +156,10 @@ if uploaded_file is not None:
                         ),
                         font=dict(size=12)
                     )
+
+                    for trace in fig.data:
+                        trace.width = 0.30
+
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
