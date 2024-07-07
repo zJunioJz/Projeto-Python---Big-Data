@@ -102,44 +102,57 @@ if uploaded_file is not None:
 
         # Plotar gráficos
         if colunas_selecionadas:
-            fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
-            for trace in fig.data:
-                trace.width = 0.08  
-            fig.update_layout(
-                xaxis=dict(
-                    tickfont=dict(
-                        size=20  
+            try:
+                # Verificar se os dados de aluno_data e colunas_selecionadas são válidos
+                if aluno_data[colunas_selecionadas].empty:
+                    st.error("Nenhum dado disponível para o gráfico do aluno.")
+                else:
+                    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
+                    for trace in fig.data:
+                        trace.width = 0.08  
+                    fig.update_layout(
+                        xaxis=dict(
+                            tickfont=dict(
+                                size=20  
+                            )
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                size=20  
+                            )
+                        ),
+                        font=dict(
+                            size=15  
+                        )
                     )
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        size=20  
-                    )
-                ),
-                font=dict(
-                    size=15  
-                )
-            )
-            st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                st.error(f"Erro ao gerar o gráfico do aluno: {e}")
 
         if colunas_selecionadas:
-            fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
-            fig.update_layout(
-                xaxis=dict(
-                    tickfont=dict(
-                        size=20  
+            try:
+                if comparacao_df.empty:
+                    st.error("Nenhum dado disponível para a comparação com a média da turma.")
+                else:
+                    fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig.update_layout(
+                        xaxis=dict(
+                            tickfont=dict(
+                                size=20  
+                            )
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                size=20  
+                            )
+                        ),
+                        font=dict(
+                            size=15  
+                        )
                     )
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        size=20  
-                    )
-                ),
-                font=dict(
-                    size=15  
-                )
-            )
-            st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
