@@ -79,10 +79,9 @@ if uploaded_file is not None:
 
         # Seleciona as colunas para exibir
         colunas_selecionadas = [
-            'Desempenho acadêmico 1º bimestre',
-            'Desempenho acadêmico 2º bimestre',
-            'Desempenho acadêmico 3º bimestre',
-            'Desempenho acadêmico 4º bimestre'
+        'Desempenho acadêmico 1º bimestre',
+        'Desempenho acadêmico 2º bimestre', 'Desempenho acadêmico 3º bimestre',
+        'Desempenho acadêmico 4º bimestre'
         ]
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
