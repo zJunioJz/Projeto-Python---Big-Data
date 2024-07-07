@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura do arquivo Excel
     tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física (2)', nrows=350)
-    tabela = tabela[['Nome', 'Turma', 'Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação esquerda']]
+    tabela = tabela[['Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação 1 direita', 'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3']]
 
     # Aplica o estilo do arquivo CSS
     try:
@@ -59,7 +59,7 @@ if uploaded_file is not None:
     aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
     # Seleciona as colunas para exibir
-    colunas_disponiveis = ['Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação esquerda']
+    colunas_disponiveis = ['Shuttle run', 'Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação 1 direita', 'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3', 'tempo de sustentação']
     colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
     st.write("### Todos os Dados")
