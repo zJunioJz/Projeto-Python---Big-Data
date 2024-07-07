@@ -104,35 +104,34 @@ if uploaded_file is not None:
 
         # Plotar gráficos
         if colunas_selecionadas:
-    try:
-        # Verificar se os dados de aluno_data e colunas_selecionadas são válidos
-        if aluno_data[colunas_selecionadas].empty:
-            st.error("Nenhum dado disponível para o gráfico do aluno.")
-        else:
-            fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
-            
-            # Atualiza o layout do gráfico para ajustar o espaçamento das barras
-            fig.update_layout(
-                xaxis=dict(
-                    tickfont=dict(
-                        size=20
+            try:
+                # Verificar se os dados de aluno_data e colunas_selecionadas são válidos
+                if aluno_data[colunas_selecionadas].empty:
+                    st.error("Nenhum dado disponível para o gráfico do aluno.")
+                else:
+                    fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
+                    
+                    # Atualiza o layout do gráfico para ajustar o espaçamento das barras
+                    fig.update_layout(
+                        xaxis=dict(
+                            tickfont=dict(
+                                size=20
+                            )
+                        ),
+                        yaxis=dict(
+                            tickfont=dict(
+                                size=20
+                            )
+                        ),
+                        font=dict(
+                            size=15
+                        ),
+                        bargap=0.2,  
+                        bargroupgap=0.1
                     )
-                ),
-                yaxis=dict(
-                    tickfont=dict(
-                        size=20
-                    )
-                ),
-                font=dict(
-                    size=15
-                ),
-                bargap=0.2,  
-                bargroupgap=0.1
-            )
-            st.plotly_chart(fig, use_container_width=True)
-    except Exception as e:
-        st.error(f"Erro ao gerar o gráfico do aluno: {e}")
-
+                    st.plotly_chart(fig, use_container_width=True)
+            except Exception as e:
+                st.error(f"Erro ao gerar o gráfico do aluno: {e}")
 
         if colunas_selecionadas:
             try:
