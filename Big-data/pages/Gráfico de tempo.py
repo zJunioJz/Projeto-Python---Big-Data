@@ -36,7 +36,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 
 if uploaded_file is not None:
     # Leitura do arquivo Excel
-    tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física (2)', nrows=350)
+    tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=350)
     tabela = tabela[['Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 'Tempo de reação direita', 'Tempo de reação 1 direita', 'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3']]
 
     # Aplica o estilo do arquivo CSS
