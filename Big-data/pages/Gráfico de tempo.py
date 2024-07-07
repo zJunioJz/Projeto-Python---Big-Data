@@ -45,8 +45,8 @@ if uploaded_file is not None:
         'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
         'Tempo de reação direita', 'Tempo de reação 1 direita', 
         'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
-        'Tempo de reação esquerda', 'Tempo de reação esquerda 1', 
-        'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3'
+        'Tempo de reação esquerda', 'Tempo de reação 1 esquerda', 
+        'Tempo de reação 2 esquerda ', 'Tempo de reação 3 esquerda'
     ]
 
     # Filtrar as colunas presentes na tabela
