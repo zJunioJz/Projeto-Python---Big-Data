@@ -102,6 +102,11 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
+        # Adiciona a coluna 'Grupo' para as cores das barras
+        aluno_data_selecionadas['Grupo'] = 'Aluno'
+        turma_mean['Grupo'] = 'Média da Turma'
+        comparacao_df['Grupo'] = comparacao_df['Métrica'].apply(lambda x: 'Aluno' if comparacao_df[comparacao_df['Métrica'] == x]['Nome'].iloc[0] == selected_aluno else 'Média da Turma')
+
         # Plotar gráficos
         if colunas_selecionadas:
             try:
@@ -144,7 +149,8 @@ if uploaded_file is not None:
                             tickfont=dict(size=20),
                             title='Valor'
                         ),
-                        font=dict(size=15)
+                        font=dict(size=15),
+                        height=800  # Define a altura do gráfico
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
