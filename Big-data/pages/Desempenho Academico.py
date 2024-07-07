@@ -114,7 +114,7 @@ if uploaded_file is not None:
         st.dataframe(dados_aluno)
 
         # Exibe a idade do aluno
-        idade_aluno = dados_aluno['Idade -Cálculo média'].values[0]
+        idade_aluno = dados_aluno['Idade'].values[0]
         st.write(f"**Idade do Aluno:** {idade_aluno} anos")
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
