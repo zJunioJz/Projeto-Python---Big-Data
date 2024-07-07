@@ -104,7 +104,7 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
-        # Plotar gráfico "Dados de tempo do aluno"
+        # Plotar gráfico "Dados de Tempo do Aluno"
         if colunas_selecionadas:
             try:
                 if aluno_data[colunas_selecionadas].empty:
@@ -129,10 +129,6 @@ if uploaded_file is not None:
                         font=dict(size=12),
                         margin=dict(l=40, r=20, t=40, b=40)  # Adiciona margens ao redor do gráfico
                     )
-
-                    for trace in fig.data:
-                        trace.width = 0.10
-
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico do aluno: {e}")
@@ -161,10 +157,6 @@ if uploaded_file is not None:
                         ),
                         font=dict(size=12)
                     )
-
-                    for trace in fig.data:
-                        trace.width = 0.30
-
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
