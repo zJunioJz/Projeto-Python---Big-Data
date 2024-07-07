@@ -47,8 +47,6 @@ if uploaded_file is not None:
         'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 
         'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 
         'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 
-        'Indice de resistencia de foça estática da preensão manual', 
-        'Diâmetro mão esquerda', 'Diâmetro mão direita', 'Diametro da barra', 
         'tempo de sustentação'
     ]
 
