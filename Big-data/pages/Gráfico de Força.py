@@ -159,8 +159,7 @@ if uploaded_file is not None:
                         font=dict(
                             size=15  
                         ),
-                        height=800,  
-                        width=800  # Ajusta a largura se necessário
+                        height=800
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
