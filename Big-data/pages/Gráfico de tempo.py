@@ -126,7 +126,7 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.10
+                        trace.width = 0.05
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
