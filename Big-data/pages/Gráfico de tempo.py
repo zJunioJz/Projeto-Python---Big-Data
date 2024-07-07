@@ -49,12 +49,13 @@ if uploaded_file is not None:
         'Tempo de reação esquerda 2', 'Tempo de reação esquerda 3'
     ]
 
-    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
-
-    if colunas_faltantes:
-        st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
+    # Filtrar as colunas presentes na tabela
+    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
+    
+    if not colunas_presentes:
+        st.error("Nenhuma das colunas necessárias está presente no arquivo.")
     else:
-        tabela = tabela[colunas_necessarias]
+        tabela = tabela[colunas_presentes]
 
         # Aplica o estilo do arquivo CSS
         try:
@@ -76,7 +77,7 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = colunas_necessarias[2:]  # Exclui 'Nome' e 'Turma'
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
