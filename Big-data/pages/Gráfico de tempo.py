@@ -80,6 +80,10 @@ if uploaded_file is not None:
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
+        # Verifique os dados disponíveis
+        st.write("### Dados Disponíveis")
+        st.write(aluno_data.head())
+
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
@@ -112,8 +116,8 @@ if uploaded_file is not None:
                             'text': 'Dados de Tempo do Aluno',
                             'x': 0.5  # Centraliza o título
                         },
-                        bargap=0.3,  # Ajusta o espaço entre as barras
-                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+                        bargap=0.4,  # Ajusta o espaço entre as barras
+                        bargroupgap=0.2,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
                             tickfont=dict(size=14),
                             title='Nome'
@@ -122,7 +126,8 @@ if uploaded_file is not None:
                             tickfont=dict(size=14),
                             title='Tempo'
                         ),
-                        font=dict(size=12)
+                        font=dict(size=12),
+                        margin=dict(l=40, r=20, t=40, b=40)  # Adiciona margens ao redor do gráfico
                     )
 
                     for trace in fig.data:
