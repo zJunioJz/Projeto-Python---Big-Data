@@ -39,7 +39,10 @@ if uploaded_file is not None:
     try:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
+        # Exibe as colunas disponíveis para depuração
+        st.write(f"Colunas disponíveis em dados_cadastrais: {dados_cadastrais.columns.tolist()}")
+        # Usar a coluna correta para a idade
+        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
@@ -104,29 +107,32 @@ if uploaded_file is not None:
                 st.error(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
                 continue
 
-        # Prepara os dados do aluno para a comparação
-        aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Nota do Aluno')
-        aluno_data_selecionadas['Nome'] = selected_aluno
-
         # Exibe os dados cadastrais do aluno selecionado
         st.write(f"### Dados Cadastrais do Aluno: {selected_aluno}")
         dados_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]
         st.dataframe(dados_aluno)
 
         # Exibe a idade do aluno
-        idade_aluno = dados_aluno['Idade'].values[0]
-        st.write(f"**Idade do Aluno:** {idade_aluno} anos")
+        if 'Idade' in dados_aluno.columns:
+            idade_aluno = dados_aluno['Idade'].values[0]
+            st.write(f"**Idade do Aluno:** {idade_aluno} anos")
+        else:
+            st.error("Coluna 'Idade' não encontrada nos dados do aluno.")
+
+        # Prepara os dados do aluno para a comparação
+        aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Nota do Aluno')
+        aluno_data_selecionadas['Nome'] = selected_aluno
+
+        # Calcula a média da turma para cada bimestre
+        turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
+        turma_mean.columns = ['Bimestre', 'Média da Turma']
+
+        # Combina os dados do aluno e a média da turma
+        comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
             try:
-                # Calcula a média da turma para cada bimestre
-                turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
-                turma_mean.columns = ['Bimestre', 'Média da Turma']
-
-                # Combina os dados do aluno e a média da turma
-                comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
-
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
