@@ -35,11 +35,14 @@ st.success("Acompanhamento do Desempenho Acadêmico")
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura dos dados cadastrais
+    # Leitura dos dados cadastrais com especificação de tipo de dado
     try:
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351, dtype={'Nome': str, 'Sexo': str, 'Turma': str, 'Idade': str})
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
+        
+        # Conversão da coluna 'Idade' para numérico, forçando erros a NaN
+        dados_cadastrais['Idade'] = pd.to_numeric(dados_cadastrais['Idade'], errors='coerce')
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
