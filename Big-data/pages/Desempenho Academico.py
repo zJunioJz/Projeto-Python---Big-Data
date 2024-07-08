@@ -39,9 +39,9 @@ if uploaded_file is not None:
     try:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-        # Exibe as colunas disponíveis para depuração
-        st.write(f"Colunas disponíveis em dados_cadastrais: {dados_cadastrais.columns.tolist()}")
-        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
+        # Remova a linha abaixo se não precisar exibir as colunas disponíveis
+        # st.write(f"Colunas disponíveis em dados_cadastrais: {dados_cadastrais.columns.tolist()}")
+        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
@@ -112,11 +112,11 @@ if uploaded_file is not None:
         st.dataframe(dados_aluno)
 
         # Exibe a idade do aluno
-        if 'Idade -Cálculo média' in dados_aluno.columns:
-            idade_aluno = dados_aluno['Idade -Cálculo média'].values[0]
+        if 'Idade' in dados_aluno.columns:
+            idade_aluno = dados_aluno['Idade'].values[0]
             st.write(f"**Idade do Aluno:** {idade_aluno} anos")
         else:
-            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
+            st.error("Coluna 'Idade' não encontrada nos dados do aluno.")
 
         # Prepara os dados do aluno para a comparação
         aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Nota do Aluno')
