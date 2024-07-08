@@ -66,7 +66,7 @@ if uploaded_file is not None:
         st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma', 'Idade']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
