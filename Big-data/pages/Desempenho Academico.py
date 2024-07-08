@@ -35,23 +35,11 @@ st.success("Acompanhamento do Desempenho Acadêmico")
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura dos dados cadastrais com especificação de tipo de dado
+    # Leitura dos dados cadastrais
     try:
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351, dtype={'Nome': str, 'Sexo': str, 'Turma': str, 'Idade': str})
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
-
-        # Diagnóstico do conteúdo e tipo de dado da coluna 'Idade'
-        st.write("Conteúdo da coluna 'Idade':")
-        st.write(dados_cadastrais['Idade'].head())
-        st.write("Tipos de dados das colunas:")
-        st.write(dados_cadastrais.dtypes)
-
-        # Corrigir a conversão da coluna 'Idade'
-        if dados_cadastrais['Idade'].dtype == 'datetime64[ns]':
-            dados_cadastrais['Idade'] = dados_cadastrais['Idade'].dt.year - 1900  # Ajuste conforme necessário
-        else:
-            dados_cadastrais['Idade'] = pd.to_numeric(dados_cadastrais['Idade'], errors='coerce')
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
@@ -78,7 +66,7 @@ if uploaded_file is not None:
         st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma', 'Idade']], on='Nome', how='left')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
