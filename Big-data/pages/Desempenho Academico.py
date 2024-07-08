@@ -40,10 +40,12 @@ if uploaded_file is not None:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
+        # Converte a coluna 'Idade' para numérico, forçando erros a NaN
+        dados_cadastrais['Idade'] = pd.to_numeric(dados_cadastrais['Idade'], errors='coerce')
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
-    
+
     # Leitura da planilha de desempenho acadêmico
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
@@ -51,7 +53,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
-    
+
     # Definir as colunas necessárias
     colunas_necessarias = [
         'Nome', 'Desempenho acadêmico 1 bimestre',
@@ -61,12 +63,12 @@ if uploaded_file is not None:
 
     # Filtrar as colunas presentes na tabela
     colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in desempenho_academico.columns]
-    
+
     if len(colunas_presentes) != len(colunas_necessarias):
         st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma', 'Idade']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
@@ -94,7 +96,7 @@ if uploaded_file is not None:
             'Desempenho acadêmico 3 bimestre',
             'Desempenho acadêmico 4 bimestre'
         ]
-        
+
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns and coluna in turma_data.columns:
