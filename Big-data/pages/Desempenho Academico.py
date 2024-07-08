@@ -41,7 +41,7 @@ if uploaded_file is not None:
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         # Remova a linha abaixo se não precisar exibir as colunas disponíveis
         # st.write(f"Colunas disponíveis em dados_cadastrais: {dados_cadastrais.columns.tolist()}")
-        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
+        dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
