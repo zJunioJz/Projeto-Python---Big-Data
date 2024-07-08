@@ -112,8 +112,8 @@ if uploaded_file is not None:
         st.dataframe(dados_aluno)
 
         # Exibe a idade do aluno
-        if 'Idade' in dados_aluno.columns:
-            idade_aluno = dados_aluno['Idade'].values[0]
+        if 'Idade -Cálculo média' in dados_aluno.columns:
+            idade_aluno = dados_aluno['Idade -Cálculo média'].values[0]
             st.write(f"**Idade do Aluno:** {idade_aluno} anos")
         else:
             st.error("Coluna 'Idade' não encontrada nos dados do aluno.")
