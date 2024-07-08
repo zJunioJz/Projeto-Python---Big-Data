@@ -40,9 +40,18 @@ if uploaded_file is not None:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351, dtype={'Nome': str, 'Sexo': str, 'Turma': str, 'Idade': str})
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade']]
-        
-        # Conversão da coluna 'Idade' para numérico, forçando erros a NaN
-        dados_cadastrais['Idade'] = pd.to_numeric(dados_cadastrais['Idade'], errors='coerce')
+
+        # Diagnóstico do conteúdo e tipo de dado da coluna 'Idade'
+        st.write("Conteúdo da coluna 'Idade':")
+        st.write(dados_cadastrais['Idade'].head())
+        st.write("Tipos de dados das colunas:")
+        st.write(dados_cadastrais.dtypes)
+
+        # Corrigir a conversão da coluna 'Idade'
+        if dados_cadastrais['Idade'].dtype == 'datetime64[ns]':
+            dados_cadastrais['Idade'] = dados_cadastrais['Idade'].dt.year - 1900  # Ajuste conforme necessário
+        else:
+            dados_cadastrais['Idade'] = pd.to_numeric(dados_cadastrais['Idade'], errors='coerce')
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
