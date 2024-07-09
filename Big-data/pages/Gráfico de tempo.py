@@ -101,9 +101,15 @@ if uploaded_file is not None:
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns:
-                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                try:
+                    aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                except Exception as e:
+                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
             if coluna in turma_data.columns:
-                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                try:
+                    turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                except Exception as e:
+                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
 
         st.write("### Todos os Dados")
         st.dataframe(tabela[['Nome'] + colunas_selecionadas])
