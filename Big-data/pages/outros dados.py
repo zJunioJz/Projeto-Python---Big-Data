@@ -67,9 +67,11 @@ if uploaded_file is not None:
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    # Converter 'Turma' para texto para garantir tratamento correto no histograma
+    df['Turma'] = df['Turma'].astype(str)
+
     # Gráfico de histograma de distribuição do sexo por turma
     color_discrete_map = {'M': 'Blue', 'F': 'Pink'}
-    df['Turma'] = df['Turma'].astype('category')  # Converter 'Turma' para categórica
     fig_sexo = px.histogram(df, x='Turma', color='Sexo', title='Distribuição do sexo por turma',
                             color_discrete_map=color_discrete_map, text_auto=True)
     fig_sexo.update_layout(
