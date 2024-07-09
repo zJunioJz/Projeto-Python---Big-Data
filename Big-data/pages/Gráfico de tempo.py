@@ -3,11 +3,11 @@ import pandas as pd
 import plotly.express as px
 
 # Função para limpar e converter coluna para numérico
-def clean_column(column):
-    if column.dtype == 'object':  # Verifica se a coluna é do tipo 'object'
-        column = column.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos se necessário
-        column = column.str.replace(r'[^\d.,]', '', regex=True)  # Remove caracteres não numéricos
-    return pd.to_numeric(column, errors='coerce')
+def clean_column(series):
+    if series.dtype == 'object':  # Verifica se a série é do tipo 'object'
+        series = series.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos se necessário
+        series = series.str.replace(r'[^\d.,]', '', regex=True)  # Remove caracteres não numéricos
+    return pd.to_numeric(series, errors='coerce')
 
 # Configuração da página
 st.set_page_config(page_title="Gráfico de Tempo", page_icon="", layout="wide")
