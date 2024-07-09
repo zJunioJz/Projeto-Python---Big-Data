@@ -4,6 +4,9 @@ import plotly.express as px
 
 # Função para limpar e converter coluna para numérico
 def clean_column(series):
+    if not isinstance(series, pd.Series):
+        raise TypeError("A entrada deve ser uma série (pd.Series).")
+    
     if series.dtype == 'object':  # Verifica se a série é do tipo 'object'
         series = series.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos
         series = series.str.replace(r'[^\d.]+', '', regex=True)  # Remove caracteres não numéricos, exceto ponto
