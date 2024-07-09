@@ -67,8 +67,13 @@ if uploaded_file is not None:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    # Converter 'Turma' para texto para garantir tratamento correto no histograma
-    df['Turma'] = df['Turma'].astype(str)
+    # Limpeza e conversão para texto
+    df['Turma'] = df['Turma'].astype(str)  # Converter para string
+    df['Turma'] = df['Turma'].str.replace(r'[^\w\s]', '', regex=True)  # Remover caracteres especiais
+    df['Turma'] = df['Turma'].str.strip()  # Remover espaços em branco extras
+
+    # Verificar dados limpos
+    st.write(df['Turma'].unique())
 
     # Gráfico de histograma de distribuição do sexo por turma
     color_discrete_map = {'M': 'Blue', 'F': 'Pink'}
@@ -101,5 +106,3 @@ if uploaded_file is not None:
 
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
-
-# Rodar o comando: python -m streamlit run Home.py
