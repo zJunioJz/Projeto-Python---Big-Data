@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura do arquivo Excel
     try:
-        medidas_antropometricas = pd.read_excel(uploaded_file, sheet_name='Medidas antropométricas', nrows=350)
+        medidas_antropometricas = pd.read_excel(uploaded_file, sheet_name='Antropometria', nrows=350)
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
     except Exception as e:
         st.error(f"Erro ao ler o arquivo Excel: {e}")
