@@ -47,6 +47,10 @@ if uploaded_file is not None:
     medidas_antropometricas.columns = medidas_antropometricas.columns.str.strip()
     dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
 
+    # Renomear colunas para garantir consistência
+    if 'nomes' in medidas_antropometricas.columns:
+        medidas_antropometricas.rename(columns={'nomes': 'Nome'}, inplace=True)
+
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
     if 'Nome' not in medidas_antropometricas.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
