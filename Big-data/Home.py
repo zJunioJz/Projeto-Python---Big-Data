@@ -1,3 +1,4 @@
+'''
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -202,3 +203,4 @@ if uploaded_file is not None:
         st.plotly_chart(fig_comparacao, use_container_width=True)
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
+'''
