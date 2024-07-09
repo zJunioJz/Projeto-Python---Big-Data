@@ -36,7 +36,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 
 if uploaded_file is not None:
     # Leitura das planilhas do arquivo Excel
-    aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=50)
+    aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
     dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
 
     # Verificar e limpar nomes das colunas
