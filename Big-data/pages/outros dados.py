@@ -69,7 +69,7 @@ if uploaded_file is not None:
 
     # Gráfico de histograma de distribuição do sexo por turma
     color_discrete_map = {'M': 'Blue', 'F': 'Pink'}
-    fig_sexo = px.histogram(df, x='Turma', nbins=30, color='Sexo', title='Distribuição do sexo por turma',
+    fig_sexo = px.histogram(df, x='Turma', color='Sexo', title='Distribuição do sexo por turma',
                             color_discrete_map=color_discrete_map, text_auto=True)
     fig_sexo.update_layout(
         plot_bgcolor='white',
