@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura dos dados cadastrais
     try:
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=351)
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
