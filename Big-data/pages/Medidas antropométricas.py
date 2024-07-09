@@ -47,16 +47,20 @@ if uploaded_file is not None:
     medidas_antropometricas.columns = medidas_antropometricas.columns.str.strip()
     dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
 
-    # Renomear colunas para garantir consistência
-    if 'nomes' in medidas_antropometricas.columns:
-        medidas_antropometricas.rename(columns={'nomes': 'Nome'}, inplace=True)
+    # Renomear as colunas para garantir consistência
+    if 'Nomes' in medidas_antropometricas.columns:
+        medidas_antropometricas.rename(columns={'Nomes': 'Nome'}, inplace=True)
+    if 'nome' in dados_cadastrais.columns:
+        dados_cadastrais.rename(columns={'nome': 'Nome'}, inplace=True)
+    if 'turma' in dados_cadastrais.columns:
+        dados_cadastrais.rename(columns={'turma': 'Turma'}, inplace=True)
 
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
     if 'Nome' not in medidas_antropometricas.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nome', 'Turma']], left_on='Nome', right_on='Nome', how='left')
 
         # Seleciona as colunas necessárias
         tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']]
