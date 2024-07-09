@@ -4,9 +4,9 @@ import plotly.express as px
 
 # Função para limpar e converter coluna para numérico
 def clean_column(column):
-    # Remove caracteres não numéricos e substitui por NaN
-    column = column.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos se necessário
-    column = column.astype(str).str.replace(r'[^\d.,]', '', regex=True)  # Remove caracteres não numéricos
+    if column.dtype == 'object':  # Verifica se a coluna é do tipo 'object'
+        column = column.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos se necessário
+        column = column.str.replace(r'[^\d.,]', '', regex=True)  # Remove caracteres não numéricos
     return pd.to_numeric(column, errors='coerce')
 
 # Configuração da página
