@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# Função para limpar e converter coluna para numérico
+def clean_column(column):
+    # Remove caracteres não numéricos e substitui por NaN
+    column = column.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos se necessário
+    column = column.astype(str).str.replace(r'[^\d.,]', '', regex=True)  # Remove caracteres não numéricos
+    return pd.to_numeric(column, errors='coerce')
+
 # Configuração da página
 st.set_page_config(page_title="Gráfico de Tempo", page_icon="", layout="wide")
 
@@ -99,11 +106,11 @@ if uploaded_file is not None:
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna not in ['Nome', 'Turma']]
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
-        # Converte colunas selecionadas para numérico, forçando erros a NaN
+        # Limpeza e conversão das colunas selecionadas
         for coluna in colunas_selecionadas:
             try:
-                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                aluno_data[coluna] = clean_column(aluno_data[coluna])
+                turma_data[coluna] = clean_column(turma_data[coluna])
             except Exception as e:
                 st.error(f"Erro ao converter a coluna {coluna} para numérico: {e}")
                 st.stop()
