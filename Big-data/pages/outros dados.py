@@ -47,7 +47,15 @@ if uploaded_file is not None:
         st.error("Arquivo de estilo não encontrado.")
 
     # Verifique e limpe a coluna 'Turma'
-    df['Turma'] = df['Turma'].astype(str)
+    df['Turma'] = df['Turma'].astype(str)  # Converte para string
+    df['Turma'] = df['Turma'].str.replace(',', '.', regex=False)  # Substitui vírgulas por pontos
+    df['Turma'] = df['Turma'].apply(lambda x: x.split()[0])  # Remove espaços adicionais, se houver
+
+    # Verifique a consistência dos dados e converta para inteiro
+    try:
+        df['Turma'] = df['Turma'].astype(int)  # Força a conversão para inteiro
+    except ValueError as e:
+        st.error(f"Erro na conversão da coluna 'Turma': {e}")
 
     # Exibir os dados únicos da coluna 'Turma'
     st.write("Dados únicos da coluna 'Turma':")
