@@ -39,6 +39,11 @@ if uploaded_file is not None:
     try:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
+        
+        # Exibir os nomes das colunas para verificação
+        st.write("Colunas disponíveis na planilha 'Dados Cadastrais':", dados_cadastrais.columns.tolist())
+        
+        # Usar os nomes corretos das colunas
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
