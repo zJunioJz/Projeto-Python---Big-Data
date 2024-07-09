@@ -46,26 +46,6 @@ if uploaded_file is not None:
     except FileNotFoundError:
         st.error("Arquivo de estilo não encontrado.")
 
-    # Verifique e limpe a coluna 'Turma'
-    df['Turma'] = df['Turma'].astype(str)  # Converte para string
-    df['Turma'] = df['Turma'].str.replace(',', '.', regex=False)  # Substitui vírgulas por pontos
-    df['Turma'] = df['Turma'].apply(lambda x: x.split()[0])  # Remove espaços adicionais, se houver
-
-    # Verifique a consistência dos dados e converta para inteiro
-    try:
-        df['Turma'] = df['Turma'].astype(int)  # Força a conversão para inteiro
-    except ValueError as e:
-        st.error(f"Erro na conversão da coluna 'Turma': {e}")
-
-    # Exibir os dados únicos da coluna 'Turma'
-    st.write("Dados únicos da coluna 'Turma':")
-    st.write(df['Turma'].unique())
-
-    # Verifique as contagens de 'Turma' e 'Sexo'
-    turma_counts = df['Turma'].value_counts()
-    st.write("Contagem de turmas:")
-    st.write(turma_counts)
-
     # Cálculo da média de idades
     idade_counts = df['Idade -Cálculo média'].value_counts().reset_index()
     idade_counts.columns = ['Idade', 'Count']
@@ -89,7 +69,7 @@ if uploaded_file is not None:
 
     # Gráfico de histograma de distribuição do sexo por turma
     color_discrete_map = {'M': 'Blue', 'F': 'Pink'}
-    fig_sexo = px.histogram(df, x='Turma', color='Sexo', title='Distribuição do sexo por turma',
+    fig_sexo = px.histogram(df, x='Turma', nbins=30, color='Sexo', title='Distribuição do sexo por turma',
                             color_discrete_map=color_discrete_map, text_auto=True)
     fig_sexo.update_layout(
         plot_bgcolor='white',
