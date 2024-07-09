@@ -39,19 +39,20 @@ if uploaded_file is not None:
     try:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-        # Remova a linha abaixo se não precisar exibir as colunas disponíveis
-        # st.write(f"Colunas disponíveis em dados_cadastrais: {dados_cadastrais.columns.tolist()}")
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
     
-    # Leitura da planilha de desempenho acadêmico
+    # Leitura da planilha de aptidão física
     try:
-        desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
-        desempenho_academico.columns = desempenho_academico.columns.str.strip()
+        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=50)
+        aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
+        
+        # Renomear a coluna 'Nomes' para 'Nome'
+        aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
     except Exception as e:
-        st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
+        st.error(f"Erro ao ler a planilha de aptidão física: {e}")
         st.stop()
     
     # Definir as colunas necessárias
@@ -62,13 +63,13 @@ if uploaded_file is not None:
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in desempenho_academico.columns]
+    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in aptidao_fisica.columns]
     
     if len(colunas_presentes) != len(colunas_necessarias):
-        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
+        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in aptidao_fisica.columns]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
