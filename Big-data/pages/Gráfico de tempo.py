@@ -40,7 +40,7 @@ if uploaded_file is not None:
         aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
 
-    # Verificar e limpar nomes das colunas
+        # Verificar e limpar nomes das colunas
         aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         
@@ -68,10 +68,9 @@ if uploaded_file is not None:
     ]
 
     # Filtrar as colunas presentes na tabela
-    
     colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
     
-    if  colunas_faltantes:
+    if colunas_faltantes:
         st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
     else:
         tabela = tabela[colunas_necessarias]
@@ -101,8 +100,11 @@ if uploaded_file is not None:
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            if coluna in aluno_data.columns and coluna in turma_data.columns:
+                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            else:
+                st.warning(f"A coluna '{coluna}' não está presente em uma das tabelas.")
 
         st.write("### Todos os Dados")
         st.dataframe(tabela[['Nome'] + colunas_selecionadas])
