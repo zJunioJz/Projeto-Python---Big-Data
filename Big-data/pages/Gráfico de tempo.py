@@ -103,8 +103,11 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna not in ['Nome', 'Turma']]
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
+
+        # Verifica colunas selecionadas
+        st.write("Colunas selecionadas:", colunas_selecionadas)
 
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
@@ -127,12 +130,14 @@ if uploaded_file is not None:
 
         st.write("### Todos os Dados")
         try:
+            st.write("Colunas disponíveis na turma:", turma_data.columns.tolist())
             st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
         except Exception as e:
             st.error(f"Erro ao exibir a tabela da turma: {e}")
 
         st.write("### Dados do Aluno Selecionado")
         try:
+            st.write("Colunas disponíveis no aluno:", aluno_data.columns.tolist())
             st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
         except Exception as e:
             st.error(f"Erro ao exibir a tabela do aluno: {e}")
