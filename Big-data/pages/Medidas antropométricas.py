@@ -47,15 +47,15 @@ if uploaded_file is not None:
     medidas_antropometricas.columns = medidas_antropometricas.columns.str.strip()
     dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
 
-    # Verificar se a coluna 'Nome' está presente em ambas as planilhas
-    if 'Nome' not in medidas_antropometricas.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
-        st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
+    # Verificar se a coluna 'Nomes' está presente em ambas as planilhas
+    if 'Nomes' not in medidas_antropometricas.columns or 'Nomes' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
+        st.error("A coluna 'Nomes' ou 'Turma' não está presente em ambas as planilhas.")
     else:
-        # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        # Mesclar as duas planilhas com base na coluna 'Nomes'
+        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nomes', 'Turma']], on='Nomes', how='left')
 
         # Seleciona as colunas necessárias
-        tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']]
+        tabela = tabela[['Nomes', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']]
         tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
         tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
         tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
@@ -75,30 +75,30 @@ if uploaded_file is not None:
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
         # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nomes'].unique())
 
         # Filtra dados do aluno selecionado
-        aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
+        aluno_data = turma_data[turma_data['Nomes'] == selected_aluno]
 
         # Seleciona as colunas para exibir
         colunas_disponiveis = ['IMC', 'Peso', 'Estatura', 'Envergadura']
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
         st.write("### Todos os Dados")
-        st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
+        st.dataframe(turma_data[['Nomes'] + colunas_selecionadas])
 
         st.write("### Dados do Aluno Selecionado")
-        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        st.dataframe(aluno_data[['Nomes'] + colunas_selecionadas])
 
         # Gráfico das medidas antropométricas do aluno
         if colunas_selecionadas:
-            fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='', text_auto=True)
+            fig = px.bar(aluno_data, x='Nomes', y=colunas_selecionadas, barmode='group', title='', text_auto=True)
             fig.update_layout(
                 title={
                     'text': f'Medidas antropométricas do aluno ({selected_aluno})',
                     'x': 0.45  # Posição centralizada
                 },
-                bargap=0.60,     
+                bargap=0.60,
                 bargroupgap=0.1,
                 xaxis=dict(
                     tickfont=dict(
@@ -121,7 +121,7 @@ if uploaded_file is not None:
             st.plotly_chart(fig, use_container_width=True)
 
         # Gráfico de dispersão IMC vs Peso
-        fig_scatter = px.scatter(turma_data, x='IMC', y='Peso', title='Relação entre IMC e Peso', color='Nome', hover_name='Nome')
+        fig_scatter = px.scatter(turma_data, x='IMC', y='Peso', title='Relação entre IMC e Peso', color='Nomes', hover_name='Nomes')
         fig_scatter.update_layout(
             title={
                 'text': 'Relação entre IMC e Peso',
