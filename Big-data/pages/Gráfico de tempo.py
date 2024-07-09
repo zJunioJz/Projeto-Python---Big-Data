@@ -2,17 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Função para limpar e converter coluna para numérico
-def clean_column(series):
-    if not isinstance(series, pd.Series):
-        raise TypeError("A entrada deve ser uma série (pd.Series).")
-    
-    # Substitui vírgulas por pontos e remove caracteres não numéricos, exceto ponto
-    if series.dtype == 'object':
-        series = series.str.replace(',', '.', regex=True)  # Substitui vírgulas por pontos
-        series = series.str.replace(r'[^\d.]+', '', regex=True)  # Remove caracteres não numéricos, exceto ponto
-    return pd.to_numeric(series, errors='coerce')
-
 # Configuração da página
 st.set_page_config(page_title="Gráfico de Tempo", page_icon="", layout="wide")
 
@@ -53,15 +42,7 @@ if uploaded_file is not None:
     # Verificar e limpar nomes das colunas
     aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
     dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-
-    # Renomear colunas para garantir consistência
-    if 'Nomes' in aptidao_fisica.columns:
-        aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
-    if 'nome' in dados_cadastrais.columns:
-        dados_cadastrais.rename(columns={'nome': 'Nome'}, inplace=True)
-    if 'Turma' not in dados_cadastrais.columns and 'turma' in dados_cadastrais.columns:
-        dados_cadastrais.rename(columns={'turma': 'Turma'}, inplace=True)
-
+    
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
     if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
@@ -107,20 +88,13 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna not in ['Nome', 'Turma']]
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
-        # Limpeza e conversão das colunas selecionadas
+        # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            if coluna in aluno_data.columns and coluna in turma_data.columns:
-                try:
-                    aluno_data[coluna] = clean_column(aluno_data[coluna])
-                    turma_data[coluna] = clean_column(turma_data[coluna])
-                except Exception as e:
-                    st.error(f"Erro ao converter a coluna {coluna} para numérico: {e}")
-                    st.stop()
-            else:
-                st.warning(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
+            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
 
         st.write("### Todos os Dados")
         st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
