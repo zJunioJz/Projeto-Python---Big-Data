@@ -102,20 +102,35 @@ if uploaded_file is not None:
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns:
                 try:
-                    aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                    # Verifica se a coluna é uma série
+                    if isinstance(aluno_data[coluna], pd.Series):
+                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                    else:
+                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
                 except Exception as e:
                     st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
+                    
             if coluna in turma_data.columns:
                 try:
-                    turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                    # Verifica se a coluna é uma série
+                    if isinstance(turma_data[coluna], pd.Series):
+                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                    else:
+                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
                 except Exception as e:
                     st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
 
         st.write("### Todos os Dados")
-        st.dataframe(tabela[['Nome'] + colunas_selecionadas])
+        try:
+            st.dataframe(tabela[['Nome'] + colunas_selecionadas])
+        except Exception as e:
+            st.error(f"Erro ao exibir os dados: {e}")
 
         st.write("### Dados do Aluno Selecionado")
-        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        try:
+            st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        except Exception as e:
+            st.error(f"Erro ao exibir os dados do aluno: {e}")
 
         # Calcula a média da turma
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
