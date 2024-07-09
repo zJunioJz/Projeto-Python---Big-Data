@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura dos dados cadastrais
     try:
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
@@ -46,7 +46,7 @@ if uploaded_file is not None:
     
     # Leitura da planilha de aptidão física
     try:
-        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=50)
+        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=50)
         aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
         
         # Renomear a coluna 'Nomes' para 'Nome'
@@ -54,19 +54,24 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de aptidão física: {e}")
         st.stop()
-    
+
+    # Verificar colunas disponíveis na planilha de aptidão física
+    colunas_aptidao = aptidao_fisica.columns.tolist()
+    st.write(f"Colunas disponíveis em aptidao_fisica: {colunas_aptidao}")
+
     # Definir as colunas necessárias
     colunas_necessarias = [
-        'Nome', 'Desempenho acadêmico 1 bimestre',
-        'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
+        'Desempenho acadêmico 1 bimestre',
+        'Desempenho acadêmico 2 bimestre',
+        'Desempenho acadêmico 3 bimestre',
         'Desempenho acadêmico 4 bimestre'
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in aptidao_fisica.columns]
+    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in colunas_aptidao]
     
     if len(colunas_presentes) != len(colunas_necessarias):
-        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in aptidao_fisica.columns]}")
+        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in colunas_aptidao]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
