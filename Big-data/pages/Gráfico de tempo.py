@@ -5,8 +5,8 @@ import plotly.express as px
 # Função para limpar e converter coluna para numérico
 def clean_column(series):
     if series.dtype == 'object':  # Verifica se a série é do tipo 'object'
-        series = series.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos se necessário
-        series = series.str.replace(r'[^\d.,]', '', regex=True)  # Remove caracteres não numéricos
+        series = series.replace({',': '.'}, regex=True)  # Substitui vírgulas por pontos
+        series = series.str.replace(r'[^\d.]+', '', regex=True)  # Remove caracteres não numéricos, exceto ponto
     return pd.to_numeric(series, errors='coerce')
 
 # Configuração da página
@@ -108,12 +108,15 @@ if uploaded_file is not None:
         
         # Limpeza e conversão das colunas selecionadas
         for coluna in colunas_selecionadas:
-            try:
-                aluno_data[coluna] = clean_column(aluno_data[coluna])
-                turma_data[coluna] = clean_column(turma_data[coluna])
-            except Exception as e:
-                st.error(f"Erro ao converter a coluna {coluna} para numérico: {e}")
-                st.stop()
+            if coluna in aluno_data.columns and coluna in turma_data.columns:
+                try:
+                    aluno_data[coluna] = clean_column(aluno_data[coluna])
+                    turma_data[coluna] = clean_column(turma_data[coluna])
+                except Exception as e:
+                    st.error(f"Erro ao converter a coluna {coluna} para numérico: {e}")
+                    st.stop()
+            else:
+                st.warning(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
 
         st.write("### Todos os Dados")
         st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
