@@ -42,7 +42,15 @@ if uploaded_file is not None:
     # Verificar e limpar nomes das colunas
     aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
     dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-    
+
+    # Renomear colunas para garantir consistência
+    if 'Nomes' in aptidao_fisica.columns:
+        aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
+    if 'nome' in dados_cadastrais.columns:
+        dados_cadastrais.rename(columns={'nome': 'Nome'}, inplace=True)
+    if 'Turma' not in dados_cadastrais.columns and 'turma' in dados_cadastrais.columns:
+        dados_cadastrais.rename(columns={'turma': 'Turma'}, inplace=True)
+
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
     if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
@@ -88,7 +96,7 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
         # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna not in ['Nome', 'Turma']]
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
