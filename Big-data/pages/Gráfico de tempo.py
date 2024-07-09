@@ -35,44 +35,37 @@ st.success("Gráfico de Tempo")
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura do arquivo Excel
-    try:
-        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
+    # Leitura das planilhas do arquivo Excel
+    aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
+    dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
 
-        # Verificar e limpar nomes das colunas
-        aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
-        dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-        
-        # Renomeia a coluna 'Nomes' para 'Nome' se necessário
-        if 'Nomes' in aptidao_fisica.columns:
-            aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
-            
-    except Exception as e:
-        st.error(f"Erro ao ler as planilhas: {e}")
-        st.stop()
+    # Verificar e limpar nomes das colunas
+    aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
+    dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
     
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
-    if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns:
-        st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
+    if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
+        st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
-    
-    colunas_necessarias = [
-        'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
-        'Tempo de reação direita', 'Tempo de reação 1 direita', 
-        'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
-        'Tempo de reação esquerda', 'Tempo de reação 1 esquerda', 
-        'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
-    ]
 
-    # Filtrar as colunas presentes na tabela
-    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
-    
-    if colunas_faltantes:
-        st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
-    else:
+        # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
+        colunas_necessarias = [
+            'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
+            'Tempo de reação direita', 'Tempo de reação 1 direita', 
+            'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
+            'Tempo de reação esquerda', 'Tempo de reação 1 esquerda', 
+            'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
+        ]
+
+        colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
+
+        if colunas_faltantes:
+            st.warning(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
+        
+        # Atualizar colunas_necessarias para conter apenas as colunas presentes
+        colunas_necessarias = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
         tabela = tabela[colunas_necessarias]
 
         # Aplica o estilo do arquivo CSS
@@ -100,37 +93,14 @@ if uploaded_file is not None:
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            if coluna in aluno_data.columns:
-                try:
-                    # Verifica se a coluna é uma série
-                    if isinstance(aluno_data[coluna], pd.Series):
-                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                    else:
-                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
-                except Exception as e:
-                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
-                    
-            if coluna in turma_data.columns:
-                try:
-                    # Verifica se a coluna é uma série
-                    if isinstance(turma_data[coluna], pd.Series):
-                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
-                    else:
-                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
-                except Exception as e:
-                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
+            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
 
         st.write("### Todos os Dados")
-        try:
-            st.dataframe(tabela[['Nome'] + colunas_selecionadas])
-        except Exception as e:
-            st.error(f"Erro ao exibir os dados: {e}")
+        st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
 
         st.write("### Dados do Aluno Selecionado")
-        try:
-            st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
-        except Exception as e:
-            st.error(f"Erro ao exibir os dados do aluno: {e}")
+        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
 
         # Calcula a média da turma
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
@@ -167,7 +137,7 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.10
+                        trace.width = 0.05
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
