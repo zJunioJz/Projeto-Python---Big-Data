@@ -75,7 +75,7 @@ if uploaded_file is not None:
         plot_bgcolor='white',
         xaxis_title='Turma',
         yaxis_title='Frequência',
-        bargap=0.1,
+        bargap=0,
         title={
             'text': 'Distribuição do sexo por turma',
             'x': 0.5  # Centralizar o título
