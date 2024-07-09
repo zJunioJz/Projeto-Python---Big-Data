@@ -72,7 +72,7 @@ if uploaded_file is not None:
         # Exibir as colunas após a mesclagem
         st.write("Colunas após mesclagem:", tabela.columns.tolist())
 
-        # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
+        # Define as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
             'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
             'Tempo de reação direita', 'Tempo de reação 1 direita', 
@@ -81,14 +81,14 @@ if uploaded_file is not None:
             'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
         ]
 
-        # Verificar quais colunas estão presentes
+        # Verifica quais colunas estão presentes
         colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
         colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
 
         if colunas_faltantes:
             st.warning(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
 
-        # Atualizar colunas_necessarias para conter apenas as colunas presentes
+        # Atualiza colunas_necessarias para conter apenas as colunas presentes
         colunas_necessarias = colunas_presentes
         tabela = tabela[colunas_necessarias]
 
