@@ -102,12 +102,15 @@ if uploaded_file is not None:
         # Seleciona as colunas para exibir
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
-        
+
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns:
-                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                try:
+                    aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                    turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                except Exception as e:
+                    st.error(f"Erro ao converter a coluna {coluna}: {e}")
 
         st.write("### Todos os Dados")
         st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
