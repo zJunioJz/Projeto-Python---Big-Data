@@ -37,49 +37,38 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura dos dados cadastrais
     try:
-        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=351)
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-        
-        # Exibir os nomes das colunas para verificação
-        st.write("Colunas disponíveis na planilha 'Dados Cadastrais':", dados_cadastrais.columns.tolist())
-        
-        # Usar os nomes corretos das colunas
+        # Remova a linha abaixo se não precisar exibir as colunas disponíveis
+        # st.write(f"Colunas disponíveis em dados_cadastrais: {dados_cadastrais.columns.tolist()}")
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
     
-    # Leitura da planilha de aptidão física
+    # Leitura da planilha de desempenho acadêmico
     try:
-        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=50)
-        aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
-        
-        # Renomear a coluna 'Nomes' para 'Nome'
-        aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
+        desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
+        desempenho_academico.columns = desempenho_academico.columns.str.strip()
     except Exception as e:
-        st.error(f"Erro ao ler a planilha de aptidão física: {e}")
+        st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
-
-    # Verificar colunas disponíveis na planilha de aptidão física
-    colunas_aptidao = aptidao_fisica.columns.tolist()
-    st.write(f"Colunas disponíveis em aptidao_fisica: {colunas_aptidao}")
-
+    
     # Definir as colunas necessárias
     colunas_necessarias = [
-        'Desempenho acadêmico 1 bimestre',
-        'Desempenho acadêmico 2 bimestre',
-        'Desempenho acadêmico 3 bimestre',
+        'Nome', 'Desempenho acadêmico 1 bimestre',
+        'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
         'Desempenho acadêmico 4 bimestre'
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in colunas_aptidao]
+    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in desempenho_academico.columns]
     
     if len(colunas_presentes) != len(colunas_necessarias):
-        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in colunas_aptidao]}")
+        st.error(f"As seguintes colunas necessárias estão ausentes: {[col for col in colunas_necessarias if col not in desempenho_academico.columns]}")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
         # Aplica o estilo do arquivo CSS
         try:
