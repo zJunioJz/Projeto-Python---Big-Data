@@ -127,7 +127,7 @@ if uploaded_file is not None:
                     if aluno_data[colunas_selecionadas].empty:
                         st.error("Nenhum dado disponível para o gráfico do aluno.")
                     else:
-                        fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno', text_auto=True)
+                        fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno(a)', text_auto=True)
                         
                         # Atualiza o layout do gráfico para ajustar o espaçamento das barras
                         fig.update_layout(
@@ -156,7 +156,7 @@ if uploaded_file is not None:
                     if comparacao_df.empty:
                         st.error("Nenhum dado disponível para a comparação com a média da turma.")
                     else:
-                        fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                        fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                         fig.update_layout(
                             xaxis=dict(
                                 tickfont=dict(
