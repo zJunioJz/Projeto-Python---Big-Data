@@ -49,6 +49,15 @@ if uploaded_file is not None:
     # Verifique e limpe a coluna 'Turma'
     df['Turma'] = df['Turma'].astype(str)
 
+    # Exibir os dados únicos da coluna 'Turma'
+    st.write("Dados únicos da coluna 'Turma':")
+    st.write(df['Turma'].unique())
+
+    # Verifique as contagens de 'Turma' e 'Sexo'
+    turma_counts = df['Turma'].value_counts()
+    st.write("Contagem de turmas:")
+    st.write(turma_counts)
+
     # Cálculo da média de idades
     idade_counts = df['Idade -Cálculo média'].value_counts().reset_index()
     idade_counts.columns = ['Idade', 'Count']
@@ -69,10 +78,6 @@ if uploaded_file is not None:
         }
     )
     st.plotly_chart(fig, use_container_width=True)
-
-    # Verifique as contagens de 'Turma' e 'Sexo'
-    turma_counts = df['Turma'].value_counts()
-    st.write(turma_counts)
 
     # Gráfico de histograma de distribuição do sexo por turma
     color_discrete_map = {'M': 'Blue', 'F': 'Pink'}
