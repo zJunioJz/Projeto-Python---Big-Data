@@ -35,8 +35,8 @@ st.success("Gráfico de Tempo")
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura das planilhas do arquivo Excel
     try:
+        # Leitura das planilhas do arquivo Excel
         aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
         
@@ -50,7 +50,7 @@ if uploaded_file is not None:
         
         if 'Nome completo' in aptidao_fisica.columns:
             aptidao_fisica.rename(columns={'Nome completo': 'Nome'}, inplace=True)
-        
+
     except Exception as e:
         st.error(f"Erro ao ler as planilhas: {e}")
         st.stop()
@@ -107,16 +107,28 @@ if uploaded_file is not None:
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns:
                 try:
-                    aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                    turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                    # Verifica se a coluna é do tipo object antes de converter
+                    if aluno_data[coluna].dtype == 'object':
+                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
                 except Exception as e:
                     st.error(f"Erro ao converter a coluna {coluna}: {e}")
 
+        # Remove colunas que não puderam ser convertidas
+        aluno_data = aluno_data.dropna(axis=1, how='all')
+        turma_data = turma_data.dropna(axis=1, how='all')
+
         st.write("### Todos os Dados")
-        st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
+        try:
+            st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
+        except Exception as e:
+            st.error(f"Erro ao exibir a tabela da turma: {e}")
 
         st.write("### Dados do Aluno Selecionado")
-        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        try:
+            st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        except Exception as e:
+            st.error(f"Erro ao exibir a tabela do aluno: {e}")
 
         # Calcula a média da turma
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
