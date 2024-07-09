@@ -62,7 +62,7 @@ if uploaded_file is not None:
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
             'Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 
-            'Força atuante', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 
+            'Pressão', 'Alometria', 'Salto horizontal', 'Salto horizontal 1', 
             'Salto horizontal 2', 'Salto horizontal 3', 'Salto vertical', 
             'Salto vertical 1', 'Salto vertical 2', 'Salto vertical 3', 
             'Indice de resistência de força estática da preensão manual', 
