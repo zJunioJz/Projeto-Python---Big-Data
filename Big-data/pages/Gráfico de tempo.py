@@ -44,6 +44,10 @@ if uploaded_file is not None:
         aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         
+        # Exibir as colunas após a leitura
+        st.write("Colunas em 'APTIDÃO FÍSICA':", aptidao_fisica.columns.tolist())
+        st.write("Colunas em 'Dados Cadastrais':", dados_cadastrais.columns.tolist())
+        
         # Renomeia a coluna 'Nomes' para 'Nome' se necessário
         if 'Nomes' in aptidao_fisica.columns:
             aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
@@ -64,6 +68,9 @@ if uploaded_file is not None:
 
         # Remove colunas duplicadas
         tabela = tabela.loc[:, ~tabela.columns.duplicated()]
+
+        # Exibir as colunas após a mesclagem
+        st.write("Colunas após mesclagem:", tabela.columns.tolist())
 
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
@@ -96,11 +103,17 @@ if uploaded_file is not None:
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
+        # Exibir as colunas da turma selecionada
+        st.write("Colunas da turma selecionada:", turma_data.columns.tolist())
+
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
+
+        # Exibir as colunas do aluno selecionado
+        st.write("Colunas do aluno selecionado:", aluno_data.columns.tolist())
 
         # Seleciona as colunas para exibir
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna not in ['Nome', 'Turma']]
