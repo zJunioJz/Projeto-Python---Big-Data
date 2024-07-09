@@ -36,20 +36,29 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 
 if uploaded_file is not None:
     # Leitura das planilhas do arquivo Excel
-    aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
-    dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
+    try:
+        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
 
-    # Verificar e limpar nomes das colunas
-    aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
-    dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
+        # Verificar e limpar nomes das colunas
+        aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
+        dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
     
+         # Verificar se a coluna 'Nome' está presente em ambas as planilhas
+        if 'Nomes' in aptidao_fisica.columns:
+           aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
+           
+    except Exception as e:
+        st.error(f"Erro ao ler as planilhas: {e}")
+        st.stop()
+
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
-    if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
-        st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
+    if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns:
+        st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
-
+        
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
             'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
