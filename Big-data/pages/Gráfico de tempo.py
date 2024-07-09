@@ -36,10 +36,28 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 
 if uploaded_file is not None:
     # Leitura do arquivo Excel
-    tabela = pd.read_excel(uploaded_file, sheet_name='Aptidão Física', nrows=350)
-    
+    try:
+        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
+        dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
+
     # Verificar e limpar nomes das colunas
-    tabela.columns = tabela.columns.str.strip()
+        aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
+        dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
+        
+        # Renomeia a coluna 'Nomes' para 'Nome' se necessário
+        if 'Nomes' in aptidao_fisica.columns:
+            aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
+            
+    except Exception as e:
+        st.error(f"Erro ao ler as planilhas: {e}")
+        st.stop()
+    
+    # Verificar se a coluna 'Nome' está presente em ambas as planilhas
+    if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns:
+        st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
+    else:
+        # Mesclar as duas planilhas com base na coluna 'Nome'
+        tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
     
     colunas_necessarias = [
         'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
@@ -50,12 +68,13 @@ if uploaded_file is not None:
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
     
-    if not colunas_presentes:
-        st.error("Nenhuma das colunas necessárias está presente no arquivo.")
+    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
+    
+    if  colunas_faltantes:
+        st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
     else:
-        tabela = tabela[colunas_presentes]
+        tabela = tabela[colunas_necessarias]
 
         # Aplica o estilo do arquivo CSS
         try:
