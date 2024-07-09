@@ -81,13 +81,15 @@ if uploaded_file is not None:
             'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
         ]
 
+        # Verificar quais colunas estão presentes
+        colunas_presentes = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
         colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
 
         if colunas_faltantes:
             st.warning(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
-        
+
         # Atualizar colunas_necessarias para conter apenas as colunas presentes
-        colunas_necessarias = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
+        colunas_necessarias = colunas_presentes
         tabela = tabela[colunas_necessarias]
 
         # Aplica o estilo do arquivo CSS
