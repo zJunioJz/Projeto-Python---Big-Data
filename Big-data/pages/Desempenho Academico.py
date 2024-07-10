@@ -74,9 +74,14 @@ if uploaded_file is not None:
         # Remove valores NaN na coluna 'Turma'
         tabela = tabela.dropna(subset=['Turma'])
 
-        # Ordena as turmas
-        tabela['Turma'] = tabela['Turma'].astype(str)
-        turmas_ordenadas = sorted(tabela['Turma'].unique(), key=lambda x: (x.isdigit(), x))
+        # Converte a coluna 'Turma' para string e remove espaços em branco
+        tabela['Turma'] = tabela['Turma'].astype(str).str.strip()
+
+        # Ordena as turmas, considerando que valores numéricos são priorizados
+        def sort_key(value):
+            return (not value.isdigit(), value)  # Prioriza valores numéricos
+
+        turmas_ordenadas = sorted(tabela['Turma'].unique(), key=sort_key)
 
         # Aplica o estilo do arquivo CSS
         try:
