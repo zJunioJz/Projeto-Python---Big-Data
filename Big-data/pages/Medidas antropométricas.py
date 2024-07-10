@@ -76,14 +76,15 @@ if uploaded_file is not None:
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
 
-        # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+        # Ordena as turmas e seleciona a turma
+        turmas = sorted(tabela['Turma'].unique())
+        selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
         # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+        selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
 
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
