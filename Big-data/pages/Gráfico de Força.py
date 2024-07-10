@@ -29,7 +29,7 @@ st.sidebar.markdown(
 st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 
 # Mensagem de sucesso
-st.success("Gráfico de força")
+st.success("Gráfico de Força")
 
 # Carregador de arquivos na barra lateral
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
@@ -77,6 +77,9 @@ if uploaded_file is not None:
         else:
             tabela = tabela[colunas_necessarias]
 
+            # Ordenar a tabela pelos nomes dos alunos
+            tabela = tabela.sort_values(by='Nome')
+
             # Aplica o estilo do arquivo CSS
             try:
                 with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
@@ -91,7 +94,7 @@ if uploaded_file is not None:
             turma_data = tabela[tabela['Turma'] == selected_turma]
 
             # Seleciona o aluno
-            selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+            selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
 
             # Filtra dados do aluno selecionado
             aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
