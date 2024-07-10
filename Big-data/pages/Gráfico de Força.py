@@ -80,6 +80,9 @@ if uploaded_file is not None:
             # Ordenar a tabela pelos nomes dos alunos
             tabela = tabela.sort_values(by='Nome')
 
+            # Ordenar as turmas, colocando NaN no final
+            tabela['Turma'] = pd.Categorical(tabela['Turma'], categories=sorted(tabela['Turma'].dropna().unique()) + [pd.NA], ordered=True)
+
             # Exibir a tabela ordenada para verificação
             st.write("### Tabela Ordenada")
             st.dataframe(tabela)
@@ -92,7 +95,7 @@ if uploaded_file is not None:
                 st.error("Arquivo de estilo não encontrado.")
 
             # Seleciona a turma
-            selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+            selected_turma = st.selectbox('Selecione a Turma', sorted(tabela['Turma'].unique(), key=lambda x: (pd.isna(x), x)))
 
             # Filtra alunos da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
