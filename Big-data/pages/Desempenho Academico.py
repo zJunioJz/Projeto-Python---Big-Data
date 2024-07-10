@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 # Configuração da página
 st.set_page_config(page_title="Desempenho Acadêmico", page_icon="", layout="wide")
@@ -39,6 +40,8 @@ if uploaded_file is not None:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
+        st.write("### Dados Cadastrais Carregados")
+        st.dataframe(dados_cadastrais.head())
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
@@ -49,6 +52,8 @@ if uploaded_file is not None:
         desempenho_academico.columns = desempenho_academico.columns.str.strip()
         if 'Nomes' in desempenho_academico.columns:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
+        st.write("### Desempenho Acadêmico Carregado")
+        st.dataframe(desempenho_academico.head())
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
@@ -160,24 +165,17 @@ if uploaded_file is not None:
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
-                    fig = px.bar(comparacao_df, x='Bimestre', y=['Nota do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig = px.bar(comparacao_df, x='Bimestre', y=['Nota do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                     fig.update_layout(
-                        title={
-                            'text': f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
-                            'x': 0.25  # Centraliza o título
-                        },
-                        bargap=0.4,  # Ajusta o espaço entre as barras
-                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
-                            tickfont=dict(size=14),
-                            title='Bimestre'
+                            tickfont=dict(size=20)
                         ),
                         yaxis=dict(
-                            title='Nota',
-                            tickfont=dict(size=14)
-                        )
+                            tickfont=dict(size=20)
+                        ),
+                        font=dict(size=15)
                     )
-                    st.plotly_chart(fig)
+                    st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
