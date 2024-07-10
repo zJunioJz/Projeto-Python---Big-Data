@@ -43,7 +43,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
-    
+
     # Leitura da planilha de desempenho acadêmico
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
@@ -54,7 +54,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
-    
+
     # Definir as colunas necessárias
     colunas_necessarias = [
         'Nome', 'Desempenho acadêmico 1 bimestre',
@@ -79,10 +79,14 @@ if uploaded_file is not None:
             st.error("Arquivo de estilo não encontrado.")
 
         # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+        turmas = sorted(set(tabela['Turma'].dropna().str.strip()))
+        selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
+
+        # Ordena os alunos em ordem alfabética
+        turma_data = turma_data.sort_values(by='Nome')
 
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
