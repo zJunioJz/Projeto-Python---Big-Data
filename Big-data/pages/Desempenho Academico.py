@@ -48,7 +48,7 @@ if uploaded_file is not None:
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
         desempenho_academico.columns = desempenho_academico.columns.str.strip()
-        # Renomeia a coluna 'Nomes' para 'Nome' se necessário
+        # Renomeia a coluna 'Nomes' para 'Nome'
         if 'Nomes' in desempenho_academico.columns:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
     except Exception as e:
@@ -71,23 +71,28 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
-        tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
+        # Remove valores NaN na coluna 'Turma'
+        tabela = tabela.dropna(subset=['Turma'])
 
-        # Ordenar as turmas e remover valores vazios
-        turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
+        # Ordena as turmas
+        tabela['Turma'] = tabela['Turma'].astype(str)
+        turmas_ordenadas = sorted(tabela['Turma'].unique(), key=lambda x: (x.isdigit(), x))
+
+        # Aplica o estilo do arquivo CSS
+        try:
+            with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
+                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        except FileNotFoundError:
+            st.error("Arquivo de estilo não encontrado.")
 
         # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', turmas)
+        selected_turma = st.selectbox('Selecione a Turma', turmas_ordenadas)
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
-        # Ordena os alunos em ordem alfabética
-        turma_data = turma_data.sort_values(by='Nome')
-
         # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
+        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
@@ -103,8 +108,8 @@ if uploaded_file is not None:
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns and coluna in turma_data.columns:
-                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
                 aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
             else:
                 st.error(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
                 continue
