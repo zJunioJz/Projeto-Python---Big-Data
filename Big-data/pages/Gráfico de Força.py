@@ -80,6 +80,10 @@ if uploaded_file is not None:
             # Ordenar a tabela pelos nomes dos alunos
             tabela = tabela.sort_values(by='Nome')
 
+            # Exibir a tabela ordenada para verificação
+            st.write("### Tabela Ordenada")
+            st.dataframe(tabela)
+
             # Aplica o estilo do arquivo CSS
             try:
                 with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
