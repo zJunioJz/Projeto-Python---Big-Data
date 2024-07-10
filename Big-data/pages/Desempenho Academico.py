@@ -71,15 +71,11 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Aplica o estilo do arquivo CSS
-        try:
-            with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
-                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-        except FileNotFoundError:
-            st.error("Arquivo de estilo não encontrado.")
+        # Converte a coluna 'Turma' para string
+        tabela['Turma'] = tabela['Turma'].astype(str).str.strip()
 
-        # Seleciona a turma
-        turmas = sorted(set(tabela['Turma'].dropna().str.strip()))
+        # Remove valores vazios e duplica
+        turmas = sorted(set(tabela['Turma'].dropna().unique()))
         selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
