@@ -62,11 +62,16 @@ if uploaded_file is not None:
         # Tratar valores NaN na coluna 'Turma'
         tabela['Turma'].fillna('Não especificado', inplace=True)
 
-        # Seleciona a turma
+        # Obter e limpar a lista de turmas válidas
         turmas_validas = tabela['Turma'].unique()
-        selected_turma = st.selectbox('Selecione a Turma', sorted(turmas_validas))
+        turmas_validas = [turma for turma in turmas_validas if turma != 'Não especificado']
+        
+        # Verifica se há turmas válidas
+        if turmas_validas:
+            # Seleciona a turma
+            selected_turma = st.selectbox('Selecione a Turma', sorted(turmas_validas))
 
-        if selected_turma != 'Não especificado':
+            # Filtra dados da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
 
             # Seleciona o aluno
@@ -173,7 +178,6 @@ if uploaded_file is not None:
                     st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
         else:
-            st.warning("Nenhuma turma selecionada ou turma inválida.")
-
+            st.warning("Nenhuma turma válida encontrada no arquivo.")
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
