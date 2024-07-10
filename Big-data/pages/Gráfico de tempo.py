@@ -32,11 +32,9 @@ st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_c
 st.success("Gráfico de Tempo")
 
 # Carregador de arquivos na barra lateral
-if 'uploaded_file' not in st.session_state:
-    st.session_state.uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
-else:
-    uploaded_file = st.session_state.uploaded_file
+uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
+# Verifica se o arquivo foi carregado
 if uploaded_file is not None:
     # Leitura das planilhas do arquivo Excel
     try:
@@ -50,7 +48,7 @@ if uploaded_file is not None:
         # Verificar se a coluna 'Nome' está presente em ambas as planilhas
         if 'Nomes' in aptidao_fisica.columns:
             aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
-    
+
     except Exception as e:
         st.error(f"Erro ao ler as planilhas: {e}")
         st.stop()
@@ -188,11 +186,10 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.30
+                        trace.width = 0.05
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
-
 else:
-    st.warning("Por favor, carregue um arquivo Excel.")
+    st.info("Por favor, carregue um arquivo Excel para continuar.")
