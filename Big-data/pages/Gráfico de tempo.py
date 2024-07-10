@@ -153,8 +153,8 @@ if uploaded_file is not None:
                             'text': 'Dados de Tempo do Aluno',
                             'x': 0.5  # Centraliza o título
                         },
-                        bargap=0.5,  # Ajusta o espaço entre as barras
-                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+                        bargap=0.3,  # Ajusta o espaço entre as barras
+                        bargroupgap=0.10,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
                             tickfont=dict(size=14),
                             title='Nome'
