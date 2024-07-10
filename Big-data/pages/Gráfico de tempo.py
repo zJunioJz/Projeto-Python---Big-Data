@@ -32,7 +32,10 @@ st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_c
 st.success("Gráfico de Tempo")
 
 # Carregador de arquivos na barra lateral
-uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
+if 'uploaded_file' not in st.session_state:
+    st.session_state.uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
+else:
+    uploaded_file = st.session_state.uploaded_file
 
 if uploaded_file is not None:
     # Leitura das planilhas do arquivo Excel
