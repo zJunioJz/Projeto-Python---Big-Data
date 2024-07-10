@@ -55,33 +55,27 @@ if uploaded_file is not None:
     if 'turma' in dados_cadastrais.columns:
         dados_cadastrais.rename(columns={'turma': 'Turma'}, inplace=True)
 
-    # Verificar se a coluna 'Nome' está presente em ambas as planilhas
+    # Verificar se a coluna 'Nome' e 'Turma' estão presentes em ambas as planilhas
     if 'Nome' not in medidas_antropometricas.columns or 'Nome' not in dados_cadastrais.columns or 'Turma' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' ou 'Turma' não está presente em ambas as planilhas.")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
-        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nome', 'Turma']], left_on='Nome', right_on='Nome', how='left')
+        tabela = pd.merge(medidas_antropometricas, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Seleciona as colunas necessárias
-        tabela = tabela[['Nome', 'Turma', 'IMC', 'Peso', 'Estatura', 'Envergadura']]
-        tabela['IMC'] = pd.to_numeric(tabela['IMC'], errors='coerce')
-        tabela['Peso'] = pd.to_numeric(tabela['Peso'], errors='coerce')
-        tabela['Estatura'] = pd.to_numeric(tabela['Estatura'], errors='coerce')
-        tabela['Envergadura'] = pd.to_numeric(tabela['Envergadura'], errors='coerce')
+        # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
+        tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
 
-        # Aplica o estilo do arquivo CSS
-        try:
-            with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
-                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-        except FileNotFoundError:
-            st.error("Arquivo de estilo não encontrado.")
+        # Ordenar as turmas e remover valores vazios
+        turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
 
-        # Remove valores NaN e ordena as turmas
-        turmas = sorted(tabela['Turma'].dropna().unique())
+        # Seleciona a turma
         selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
+
+        # Ordena os alunos em ordem alfabética
+        turma_data = turma_data.sort_values(by='Nome')
 
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
@@ -93,11 +87,25 @@ if uploaded_file is not None:
         colunas_disponiveis = ['IMC', 'Peso', 'Estatura', 'Envergadura']
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
+        # Converte as colunas selecionadas para numérico, forçando erros a NaN
+        for coluna in colunas_selecionadas:
+            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+
         st.write("### Todos os Dados")
         st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
 
         st.write("### Dados do Aluno Selecionado")
         st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+
+        # Calcula a média da turma
+        turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
+        turma_mean.columns = ['Métrica', 'Média da Turma']
+
+        # Prepara os dados do aluno para a comparação
+        aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Métrica', value_name='Valor do Aluno')
+        aluno_data_selecionadas['Nome'] = selected_aluno
+        comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
         # Gráfico das medidas antropométricas do aluno
         if colunas_selecionadas:
@@ -107,47 +115,33 @@ if uploaded_file is not None:
                     'text': f'Medidas antropométricas do aluno ({selected_aluno})',
                     'x': 0.45  # Posição centralizada
                 },
-                bargap=0.60,     
+                bargap=0.60,
                 bargroupgap=0.1,
                 xaxis=dict(
-                    tickfont=dict(
-                        size=20  # Tamanho da fonte para o eixo x
-                    )
+                    tickfont=dict(size=20)
                 ),
                 yaxis=dict(
-                    tickfont=dict(
-                        size=20  # Tamanho da fonte para o eixo y
-                    )
+                    tickfont=dict(size=20)
                 ),
-                font=dict(
-                    size=15  # Tamanho da fonte
-                )
+                font=dict(size=15)
             )
-
-            for trace in fig.data:
-                trace.width = 0.05  # Espessura das colunas
-
             st.plotly_chart(fig, use_container_width=True)
 
-        # Gráfico de dispersão IMC vs Peso
-        fig_scatter = px.scatter(turma_data, x='IMC', y='Peso', title='Relação entre IMC e Peso', color='Nome', hover_name='Nome')
-        fig_scatter.update_layout(
-            title={
-                'text': 'Relação entre IMC e Peso',
-                'x': 0.5  # Posição centralizada
-            },
-            xaxis=dict(
-                tickfont=dict(
-                    size=20  # Tamanho da fonte para o eixo x
-                )
-            ),
-            yaxis=dict(
-                tickfont=dict(
-                    size=20  # Tamanho da fonte para o eixo y
-                )
+        # Gráfico de comparação entre o aluno e a média da turma
+        if colunas_selecionadas:
+            fig_comparacao = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group',
+                                   title=f'Comparação de Medidas Antropométricas do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                                   text_auto=True)
+            fig_comparacao.update_layout(
+                xaxis=dict(
+                    tickfont=dict(size=20)
+                ),
+                yaxis=dict(
+                    tickfont=dict(size=20)
+                ),
+                font=dict(size=15)
             )
-        )
-        st.plotly_chart(fig_scatter, use_container_width=True)
+            st.plotly_chart(fig_comparacao, use_container_width=True)
 
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
