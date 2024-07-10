@@ -94,6 +94,9 @@ if uploaded_file is not None:
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
+        # Ordena os dados por nome do aluno
+        turma_data = turma_data.sort_values(by='Nome')
+
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
 
@@ -124,7 +127,7 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
-        # Plotar gráfico "Dados de tempo do aluno"
+        # Plotar gráfico "Dados de Tempo do Aluno"
         if colunas_selecionadas:
             try:
                 if aluno_data[colunas_selecionadas].empty:
