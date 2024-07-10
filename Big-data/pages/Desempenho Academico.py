@@ -40,8 +40,6 @@ if uploaded_file is not None:
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais', nrows=351)
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
         dados_cadastrais = dados_cadastrais[['Nome', 'Sexo', 'Turma', 'Idade -Cálculo média']]
-        st.write("### Dados Cadastrais Carregados")
-        st.dataframe(dados_cadastrais.head())
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
@@ -50,10 +48,9 @@ if uploaded_file is not None:
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
         desempenho_academico.columns = desempenho_academico.columns.str.strip()
+        # Renomeia a coluna 'Nomes' para 'Nome'
         if 'Nomes' in desempenho_academico.columns:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
-        st.write("### Desempenho Acadêmico Carregado")
-        st.dataframe(desempenho_academico.head())
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
@@ -74,28 +71,6 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Remove valores NaN na coluna 'Turma'
-        tabela = tabela.dropna(subset=['Turma'])
-
-        # Converte a coluna 'Turma' para string e remove espaços em branco
-        tabela['Turma'] = tabela['Turma'].astype(str).str.strip()
-
-        # Verifica e exibe todas as turmas únicas para depuração
-        turmas_unicas = tabela['Turma'].unique()
-        st.write("### Turmas Únicas Detectadas")
-        st.write(turmas_unicas)
-
-        # Ordena as turmas, considerando que valores numéricos são priorizados
-        def sort_key(value):
-            try:
-                return (not value.replace('.', '', 1).isdigit(), float(value))
-            except ValueError:
-                return (True, value)  # Caso não seja numérico, coloca no final
-
-        turmas_ordenadas = sorted(set(turmas_unicas), key=sort_key)
-        st.write("### Turmas Ordenadas")
-        st.write(turmas_ordenadas)
-
         # Aplica o estilo do arquivo CSS
         try:
             with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
@@ -104,14 +79,10 @@ if uploaded_file is not None:
             st.error("Arquivo de estilo não encontrado.")
 
         # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', turmas_ordenadas)
+        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
-
-        # Verifica e exibe as primeiras linhas dos dados da turma selecionada para depuração
-        st.write("### Dados da Turma Selecionada")
-        st.dataframe(turma_data.head())
 
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
@@ -165,15 +136,23 @@ if uploaded_file is not None:
                 if comparacao_df.empty:
                     st.error("Nenhum dado disponível para a comparação com a média da turma.")
                 else:
-                    fig = px.bar(comparacao_df, x='Bimestre', y=['Nota do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                    fig = px.bar(comparacao_df, x='Bimestre', y=['Nota do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                     fig.update_layout(
+                        title={
+                            'text': f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                            'x': 0.25  # Centraliza o título
+                        },
+                        bargap=0.4,  # Ajusta o espaço entre as barras
+                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
-                            tickfont=dict(size=20)
+                            tickfont=dict(size=14),
+                            title='Bimestre'
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=20)
+                            tickfont=dict(size=14),
+                            title='Nota'
                         ),
-                        font=dict(size=15)
+                        font=dict(size=12)
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
