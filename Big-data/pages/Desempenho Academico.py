@@ -43,7 +43,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
         st.stop()
-    
+
     # Leitura da planilha de desempenho acadêmico
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
@@ -54,7 +54,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
-    
+
     # Definir as colunas necessárias
     colunas_necessarias = [
         'Nome', 'Desempenho acadêmico 1 bimestre',
@@ -71,18 +71,18 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Aplica o estilo do arquivo CSS
-        try:
-            with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
-                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-        except FileNotFoundError:
-            st.error("Arquivo de estilo não encontrado.")
+        # Converte a coluna 'Turma' para string
+        tabela['Turma'] = tabela['Turma'].astype(str).str.strip()
 
-        # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+        # Remove valores vazios e duplica
+        turmas = sorted(set(tabela['Turma'].dropna().unique()))
+        selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
+
+        # Ordena os alunos em ordem alfabética
+        turma_data = turma_data.sort_values(by='Nome')
 
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
