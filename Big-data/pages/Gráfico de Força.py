@@ -59,6 +59,12 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
+        # Remover valores NaN na coluna 'Turma'
+        tabela = tabela.dropna(subset=['Turma'])
+
+        # Ordenar as turmas
+        turmas = sorted(tabela['Turma'].unique(), key=lambda x: (str(x).isdigit(), x))
+
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
             'Nome', 'Turma', 'Abdominal', 'Apoio de frente sobre o solo', 
@@ -85,7 +91,7 @@ if uploaded_file is not None:
                 st.error("Arquivo de estilo não encontrado.")
 
             # Seleciona a turma
-            selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+            selected_turma = st.selectbox('Selecione a Turma', turmas)
 
             # Filtra alunos da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
