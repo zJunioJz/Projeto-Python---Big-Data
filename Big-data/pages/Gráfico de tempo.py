@@ -67,9 +67,11 @@ if uploaded_file is not None:
 
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
-            'Nome', 'Turma', 'Tempo Total', 'Tempo de Sustentação', 'Tempo de Abdominal', 
-            'Tempo de Apoio de Frente', 'Tempo de Salto Horizontal', 'Tempo de Salto Vertical', 
-            'Tempo de Preensão Manual'
+            'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
+            'Tempo de reação direita', 'Tempo de reação 1 direita', 
+            'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
+            'Tempo de reação esquerda', 'Tempo de reação 1 esquerda', 
+            'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
         ]
 
         colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
