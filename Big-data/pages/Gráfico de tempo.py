@@ -43,11 +43,11 @@ if uploaded_file is not None:
         # Verificar e limpar nomes das colunas
         aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-    
-         # Verificar se a coluna 'Nome' está presente em ambas as planilhas
+
+        # Verificar se a coluna 'Nome' está presente em ambas as planilhas
         if 'Nomes' in aptidao_fisica.columns:
-           aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
-           
+            aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
+    
     except Exception as e:
         st.error(f"Erro ao ler as planilhas: {e}")
         st.stop()
@@ -58,7 +58,10 @@ if uploaded_file is not None:
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
-        
+
+        # Remover valores NaN na coluna 'Turma'
+        tabela = tabela.dropna(subset=['Turma'])
+
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
             'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
@@ -84,14 +87,15 @@ if uploaded_file is not None:
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
 
-        # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+        # Remove valores NaN e ordena as turmas
+        turmas = sorted(tabela['Turma'].unique())
+        selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
         # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+        selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
 
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
