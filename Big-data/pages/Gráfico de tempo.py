@@ -37,7 +37,7 @@ uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"]
 if uploaded_file is not None:
     # Leitura do arquivo Excel
     try:
-        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
+        aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA')
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
     except Exception as e:
         st.error(f"Erro ao ler as planilhas: {e}")
@@ -79,13 +79,6 @@ if uploaded_file is not None:
             st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
         else:
             tabela = tabela[colunas_necessarias]
-
-            # Aplica o estilo do arquivo CSS
-            try:
-                with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
-                    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-            except FileNotFoundError:
-                st.error("Arquivo de estilo não encontrado.")
 
             # Seleciona a turma
             turmas = sorted(tabela['Turma'].dropna().unique())
@@ -157,9 +150,6 @@ if uploaded_file is not None:
                                 font=dict(size=12)
                             )
 
-                            for trace in fig.data:
-                                trace.width = 0.10
-
                             st.plotly_chart(fig, use_container_width=True)
                     except Exception as e:
                         st.error(f"Erro ao gerar o gráfico do aluno: {e}")
@@ -188,9 +178,6 @@ if uploaded_file is not None:
                                 ),
                                 font=dict(size=12)
                             )
-
-                            for trace in fig.data:
-                                trace.width = 0.10
 
                             st.plotly_chart(fig, use_container_width=True)
                     except Exception as e:
