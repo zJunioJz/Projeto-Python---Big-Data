@@ -83,16 +83,13 @@ if uploaded_file is not None:
             st.error("Arquivo de estilo não encontrado.")
 
         # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', sorted(tabela['Turma'].dropna().unique()))
+        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
-        # Ordena os alunos em ordem alfabética
-        turma_data = turma_data.sort_values(by='Nome')
-
         # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].dropna().unique()))
+        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
@@ -100,27 +97,38 @@ if uploaded_file is not None:
         # Seleciona as colunas para exibir
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
-
+        
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns:
-                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                try:
+                    # Verifica se a coluna é uma série
+                    if isinstance(aluno_data[coluna], pd.Series):
+                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                    else:
+                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
+                except Exception as e:
+                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
+                    
             if coluna in turma_data.columns:
-                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
-
-        # Remove NaN antes de exibir
-        tabela_clean = tabela.dropna(subset=['Nome'] + colunas_selecionadas)
-        aluno_data_clean = aluno_data.dropna(subset=['Nome'] + colunas_selecionadas)
+                try:
+                    # Verifica se a coluna é uma série
+                    if isinstance(turma_data[coluna], pd.Series):
+                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                    else:
+                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
+                except Exception as e:
+                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
 
         st.write("### Todos os Dados")
         try:
-            st.dataframe(tabela_clean[['Nome'] + colunas_selecionadas].sort_values(by='Nome'))
+            st.dataframe(tabela[['Nome'] + colunas_selecionadas])
         except Exception as e:
             st.error(f"Erro ao exibir os dados: {e}")
 
         st.write("### Dados do Aluno Selecionado")
         try:
-            st.dataframe(aluno_data_clean[['Nome'] + colunas_selecionadas])
+            st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
         except Exception as e:
             st.error(f"Erro ao exibir os dados do aluno: {e}")
 
@@ -136,7 +144,7 @@ if uploaded_file is not None:
         # Plotar gráfico "Dados de tempo do aluno"
         if colunas_selecionadas:
             try:
-                if aluno_data_selecionadas.empty:
+                if aluno_data[colunas_selecionadas].empty:
                     st.error("Nenhum dado disponível para o gráfico do aluno.")
                 else:
                     fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Tempo do Aluno', text_auto=True)
@@ -191,11 +199,11 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.10
+                        trace.width = 0.30
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
 else:
-    st.info("Por favor, faça o upload de um arquivo Excel.")
+    st.warning("Por favor, carregue um arquivo Excel.")
