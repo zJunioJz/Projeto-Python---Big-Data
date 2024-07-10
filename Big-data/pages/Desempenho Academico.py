@@ -71,17 +71,26 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
+        # Verifica e exibe as primeiras linhas da tabela para depuração
+        st.write("### Primeiras linhas da tabela combinada")
+        st.dataframe(tabela.head())
+
         # Remove valores NaN na coluna 'Turma'
         tabela = tabela.dropna(subset=['Turma'])
 
         # Converte a coluna 'Turma' para string e remove espaços em branco
         tabela['Turma'] = tabela['Turma'].astype(str).str.strip()
 
+        # Verifica e exibe todas as turmas únicas para depuração
+        turmas_unicas = tabela['Turma'].unique()
+        st.write("### Turmas Únicas")
+        st.write(turmas_unicas)
+
         # Ordena as turmas, considerando que valores numéricos são priorizados
         def sort_key(value):
             return (not value.isdigit(), value)  # Prioriza valores numéricos
 
-        turmas_ordenadas = sorted(tabela['Turma'].unique(), key=sort_key)
+        turmas_ordenadas = sorted(set(turmas_unicas), key=sort_key)
 
         # Aplica o estilo do arquivo CSS
         try:
@@ -95,6 +104,10 @@ if uploaded_file is not None:
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
+
+        # Verifica e exibe as primeiras linhas dos dados da turma selecionada para depuração
+        st.write("### Dados da Turma Selecionada")
+        st.dataframe(turma_data.head())
 
         # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
