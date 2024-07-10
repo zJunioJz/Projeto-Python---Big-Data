@@ -76,8 +76,8 @@ if uploaded_file is not None:
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
 
-        # Ordena as turmas e seleciona a turma
-        turmas = sorted(tabela['Turma'].unique())
+        # Remove valores NaN e ordena as turmas
+        turmas = sorted(tabela['Turma'].dropna().unique())
         selected_turma = st.selectbox('Selecione a Turma', turmas)
 
         # Filtra alunos da turma selecionada
