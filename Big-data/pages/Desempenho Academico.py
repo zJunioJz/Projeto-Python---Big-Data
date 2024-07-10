@@ -69,10 +69,6 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Verifica e exibe as primeiras linhas da tabela para depuração
-        st.write("### Primeiras linhas da tabela combinada")
-        st.dataframe(tabela.head())
-
         # Remove valores NaN na coluna 'Turma'
         tabela = tabela.dropna(subset=['Turma'])
 
@@ -86,7 +82,10 @@ if uploaded_file is not None:
 
         # Ordena as turmas, considerando que valores numéricos são priorizados
         def sort_key(value):
-            return (not value.isdigit(), value)  # Prioriza valores numéricos
+            try:
+                return (not value.replace('.', '', 1).isdigit(), float(value))
+            except ValueError:
+                return (True, value)  # Caso não seja numérico, coloca no final
 
         turmas_ordenadas = sorted(set(turmas_unicas), key=sort_key)
         st.write("### Turmas Ordenadas")
@@ -174,12 +173,11 @@ if uploaded_file is not None:
                             title='Bimestre'
                         ),
                         yaxis=dict(
-                            tickfont=dict(size=14),
-                            title='Nota'
-                        ),
-                        font=dict(size=12)
+                            title='Nota',
+                            tickfont=dict(size=14)
+                        )
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
