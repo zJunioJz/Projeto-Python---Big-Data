@@ -34,9 +34,8 @@ st.success("Gráfico de Tempo")
 # Carregador de arquivos na barra lateral
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
-# Verifica se o arquivo foi carregado
 if uploaded_file is not None:
-    # Leitura das planilhas do arquivo Excel
+    # Leitura do arquivo Excel
     try:
         aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
@@ -44,41 +43,36 @@ if uploaded_file is not None:
         # Verificar e limpar nomes das colunas
         aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-
-        # Verificar se a coluna 'Nome' está presente em ambas as planilhas
+        
+        # Renomeia a coluna 'Nomes' para 'Nome' se necessário
         if 'Nomes' in aptidao_fisica.columns:
             aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
-
+            
     except Exception as e:
         st.error(f"Erro ao ler as planilhas: {e}")
         st.stop()
-
+    
     # Verificar se a coluna 'Nome' está presente em ambas as planilhas
     if 'Nome' not in aptidao_fisica.columns or 'Nome' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+    
+    colunas_necessarias = [
+        'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
+        'Tempo de reação direita', 'Tempo de reação 1 direita', 
+        'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
+        'Tempo de reação esquerda', 'Tempo de reação 1 esquerda', 
+        'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
+    ]
 
-        # Remover valores NaN na coluna 'Turma'
-        tabela = tabela.dropna(subset=['Turma'])
-
-        # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
-        colunas_necessarias = [
-            'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
-            'Tempo de reação direita', 'Tempo de reação 1 direita', 
-            'Tempo de reação 2 direita', 'Tempo de reação 3 direita', 
-            'Tempo de reação esquerda', 'Tempo de reação 1 esquerda', 
-            'Tempo de reação 2 esquerda', 'Tempo de reação 3 esquerda'
-        ]
-
-        colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
-
-        if colunas_faltantes:
-            st.warning(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
-        
-        # Atualizar colunas_necessarias para conter apenas as colunas presentes
-        colunas_necessarias = [coluna for coluna in colunas_necessarias if coluna in tabela.columns]
+    # Filtrar as colunas presentes na tabela
+    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
+    
+    if colunas_faltantes:
+        st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
+    else:
         tabela = tabela[colunas_necessarias]
 
         # Aplica o estilo do arquivo CSS
@@ -88,18 +82,14 @@ if uploaded_file is not None:
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
 
-        # Remove valores NaN e ordena as turmas
-        turmas = sorted(tabela['Turma'].unique())
-        selected_turma = st.selectbox('Selecione a Turma', turmas)
+        # Seleciona a turma
+        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
-        # Ordena os dados por nome do aluno
-        turma_data = turma_data.sort_values(by='Nome')
-
         # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
+        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
@@ -110,14 +100,37 @@ if uploaded_file is not None:
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+            if coluna in aluno_data.columns:
+                try:
+                    # Verifica se a coluna é uma série
+                    if isinstance(aluno_data[coluna], pd.Series):
+                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                    else:
+                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
+                except Exception as e:
+                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
+                    
+            if coluna in turma_data.columns:
+                try:
+                    # Verifica se a coluna é uma série
+                    if isinstance(turma_data[coluna], pd.Series):
+                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                    else:
+                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
+                except Exception as e:
+                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
 
         st.write("### Todos os Dados")
-        st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
+        try:
+            st.dataframe(tabela[['Nome'] + colunas_selecionadas])
+        except Exception as e:
+            st.error(f"Erro ao exibir os dados: {e}")
 
         st.write("### Dados do Aluno Selecionado")
-        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        try:
+            st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        except Exception as e:
+            st.error(f"Erro ao exibir os dados do aluno: {e}")
 
         # Calcula a média da turma
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
@@ -128,7 +141,7 @@ if uploaded_file is not None:
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
-        # Plotar gráfico "Dados de Tempo do Aluno"
+        # Plotar gráfico "Dados de tempo do aluno"
         if colunas_selecionadas:
             try:
                 if aluno_data[colunas_selecionadas].empty:
@@ -138,7 +151,7 @@ if uploaded_file is not None:
                     fig.update_layout(
                         title={
                             'text': 'Dados de Tempo do Aluno',
-                            'x': 0.40  # Centraliza o título
+                            'x': 0.5  # Centraliza o título
                         },
                         bargap=0.3,  # Ajusta o espaço entre as barras
                         bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
@@ -154,7 +167,7 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.05
+                        trace.width = 0.10
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
@@ -170,7 +183,7 @@ if uploaded_file is not None:
                     fig.update_layout(
                         title={
                             'text': f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
-                            'x': 0.25  # Centraliza o título
+                            'x': 0.5  # Centraliza o título
                         },
                         bargap=0.4,  # Ajusta o espaço entre as barras
                         bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
@@ -186,10 +199,11 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.05
+                        trace.width = 0.30
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.error(f"Erro ao gerar o gráfico de comparação: {e}")
+
 else:
-    st.info("Por favor, carregue um arquivo Excel para continuar.")
+    st.warning("Por favor, carregue um arquivo Excel.")
