@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 
 # Configuração da página
 st.set_page_config(page_title="Desempenho Acadêmico", page_icon="", layout="wide")
@@ -48,7 +47,6 @@ if uploaded_file is not None:
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=50)
         desempenho_academico.columns = desempenho_academico.columns.str.strip()
-        # Renomeia a coluna 'Nomes' para 'Nome'
         if 'Nomes' in desempenho_academico.columns:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
     except Exception as e:
@@ -83,7 +81,7 @@ if uploaded_file is not None:
 
         # Verifica e exibe todas as turmas únicas para depuração
         turmas_unicas = tabela['Turma'].unique()
-        st.write("### Turmas Únicas")
+        st.write("### Turmas Únicas Detectadas")
         st.write(turmas_unicas)
 
         # Ordena as turmas, considerando que valores numéricos são priorizados
@@ -91,6 +89,8 @@ if uploaded_file is not None:
             return (not value.isdigit(), value)  # Prioriza valores numéricos
 
         turmas_ordenadas = sorted(set(turmas_unicas), key=sort_key)
+        st.write("### Turmas Ordenadas")
+        st.write(turmas_ordenadas)
 
         # Aplica o estilo do arquivo CSS
         try:
