@@ -29,7 +29,7 @@ st.sidebar.markdown(
 st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 
 # Mensagem de sucesso
-st.success("Gráfico de Força")
+st.success("Gráfico de força")
 
 # Carregador de arquivos na barra lateral
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
@@ -77,16 +77,6 @@ if uploaded_file is not None:
         else:
             tabela = tabela[colunas_necessarias]
 
-            # Ordenar a tabela pelos nomes dos alunos
-            tabela = tabela.sort_values(by='Nome')
-
-            # Ordenar as turmas, colocando NaN no final
-            tabela['Turma'] = pd.Categorical(tabela['Turma'], categories=sorted(tabela['Turma'].dropna().unique()) + [pd.NA], ordered=True)
-
-            # Exibir a tabela ordenada para verificação
-            st.write("### Tabela Ordenada")
-            st.dataframe(tabela)
-
             # Aplica o estilo do arquivo CSS
             try:
                 with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
@@ -95,13 +85,13 @@ if uploaded_file is not None:
                 st.error("Arquivo de estilo não encontrado.")
 
             # Seleciona a turma
-            selected_turma = st.selectbox('Selecione a Turma', sorted(tabela['Turma'].unique(), key=lambda x: (pd.isna(x), x)))
+            selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
 
             # Filtra alunos da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
 
             # Seleciona o aluno
-            selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
+            selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
             # Filtra dados do aluno selecionado
             aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
