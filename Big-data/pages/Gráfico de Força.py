@@ -96,11 +96,11 @@ if uploaded_file is not None:
             # Filtra alunos da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
 
-            # Ordena os nomes dos alunos em ordem alfabética
-            alunos = sorted(turma_data['Nome'].unique(), key=str.lower)
+            # Ordena os alunos em ordem alfabética
+            turma_data = turma_data.sort_values(by='Nome')
 
             # Seleciona o aluno
-            selected_aluno = st.selectbox('Selecione o aluno', alunos)
+            selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
             # Filtra dados do aluno selecionado
             aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
