@@ -130,7 +130,7 @@ if uploaded_file is not None:
                     fig.update_layout(
                         title={
                             'text': 'Dados de Tempo do Aluno',
-                            'x': 0.5  # Centraliza o título
+                            'x': 0.25  # Centraliza o título
                         },
                         bargap=0.3,  # Ajusta o espaço entre as barras
                         bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
