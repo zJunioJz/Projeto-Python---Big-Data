@@ -63,7 +63,7 @@ if uploaded_file is not None:
         tabela = tabela.dropna(subset=['Turma'])
 
         # Ordenar as turmas
-        turmas = sorted(tabela['Turma'].unique(), key=lambda x: (str(x).isdigit(), x))
+        turmas = sorted(tabela['Turma'].unique(), key=str.lower)
 
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
@@ -96,8 +96,11 @@ if uploaded_file is not None:
             # Filtra alunos da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
 
+            # Ordena os nomes dos alunos em ordem alfabética
+            alunos = sorted(turma_data['Nome'].unique(), key=str.lower)
+
             # Seleciona o aluno
-            selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+            selected_aluno = st.selectbox('Selecione o aluno', alunos)
 
             # Filtra dados do aluno selecionado
             aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
