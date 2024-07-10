@@ -94,6 +94,9 @@ if uploaded_file is not None:
             # Filtra alunos da turma selecionada
             turma_data = tabela[tabela['Turma'] == selected_turma]
 
+            # Ordena os alunos em ordem alfabética
+            turma_data = turma_data.sort_values(by='Nome')
+
             # Seleciona o aluno
             selected_aluno = st.selectbox('Selecione o aluno', sorted(turma_data['Nome'].unique()))
 
@@ -187,11 +190,13 @@ if uploaded_file is not None:
                             )
 
                             for trace in fig.data:
-                                trace.width = 0.30
+                                trace.width = 0.10
 
                             st.plotly_chart(fig, use_container_width=True)
                     except Exception as e:
-                        st.error(f"Erro ao gerar o gráfico de comparação: {e}")
+                        st.error(f"Erro ao gerar o gráfico de comparação com a média da turma: {e}")
 
+            else:
+                st.warning("Nenhuma coluna selecionada para exibição.")
 else:
-    st.warning("Por favor, carregue um arquivo Excel.")
+    st.info("Carregue um arquivo Excel para visualizar os gráficos.")
