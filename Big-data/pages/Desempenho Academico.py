@@ -51,6 +51,14 @@ if uploaded_file is not None:
         # Renomeia a coluna 'Nomes' para 'Nome'
         if 'Nomes' in desempenho_academico.columns:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
+            # Mesclar as duas planilhas com base na coluna 'Nome'
+            tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+
+            # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
+            tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
+
+        # Remover valores vazios e garantir que todos os valores são strings
+        turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
