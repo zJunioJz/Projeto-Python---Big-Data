@@ -59,8 +59,8 @@ if uploaded_file is not None:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
 
-        # Remover valores NaN na coluna 'Turma'
-        tabela = tabela.dropna(subset=['Turma'])
+        # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
+        tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
 
         # Ordenar as turmas
         turmas = sorted(tabela['Turma'].unique(), key=str.lower)
