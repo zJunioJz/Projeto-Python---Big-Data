@@ -62,8 +62,8 @@ if uploaded_file is not None:
         # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
         tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
 
-        # Ordenar as turmas
-        turmas = sorted(tabela['Turma'].unique(), key=str.lower)
+        # Remover valores vazios e garantir que todos os valores são strings
+        turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
 
         # Definir as colunas necessárias (ajustado com base nas colunas disponíveis)
         colunas_necessarias = [
