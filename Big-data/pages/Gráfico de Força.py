@@ -39,15 +39,15 @@ if uploaded_file is not None:
     try:
         aptidao_fisica = pd.read_excel(uploaded_file, sheet_name='APTIDÃO FÍSICA', nrows=350)
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
-        
+
         # Verificar e limpar nomes das colunas
         aptidao_fisica.columns = aptidao_fisica.columns.str.strip()
         dados_cadastrais.columns = dados_cadastrais.columns.str.strip()
-        
+
         # Renomeia a coluna 'Nomes' para 'Nome' se necessário
         if 'Nomes' in aptidao_fisica.columns:
             aptidao_fisica.rename(columns={'Nomes': 'Nome'}, inplace=True)
-            
+
     except Exception as e:
         st.error(f"Erro ao ler as planilhas: {e}")
         st.stop()
@@ -120,10 +120,9 @@ if uploaded_file is not None:
             aluno_data_selecionadas['Nome'] = selected_aluno
             comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
 
-            # Plotar gráficos
+            # Plotar gráfico "Dados de Força do Aluno"
             if colunas_selecionadas:
                 try:
-                    # Verificar se os dados de aluno_data e colunas_selecionadas são válidos
                     if aluno_data[colunas_selecionadas].empty:
                         st.error("Nenhum dado disponível para o gráfico do aluno.")
                     else:
@@ -132,45 +131,35 @@ if uploaded_file is not None:
                         # Atualiza o layout do gráfico para ajustar o espaçamento das barras
                         fig.update_layout(
                             xaxis=dict(
-                                tickfont=dict(
-                                    size=20
-                                )
+                                tickfont=dict(size=20)
                             ),
                             yaxis=dict(
-                                tickfont=dict(
-                                    size=20
-                                )
+                                tickfont=dict(size=20)
                             ),
-                            font=dict(
-                                size=15
-                            ),
-                            bargap=0.2,  
+                            font=dict(size=15),
+                            bargap=0.2,
                             bargroupgap=0.1
                         )
                         st.plotly_chart(fig, use_container_width=True)
                 except Exception as e:
                     st.error(f"Erro ao gerar o gráfico do aluno: {e}")
 
+            # Plotar gráfico "Comparação de Força do Aluno"
             if colunas_selecionadas:
                 try:
                     if comparacao_df.empty:
                         st.error("Nenhum dado disponível para a comparação com a média da turma.")
                     else:
                         fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                        
                         fig.update_layout(
                             xaxis=dict(
-                                tickfont=dict(
-                                    size=20  
-                                )
+                                tickfont=dict(size=20)
                             ),
                             yaxis=dict(
-                                tickfont=dict(
-                                    size=20  
-                                )
+                                tickfont=dict(size=20)
                             ),
-                            font=dict(
-                                size=15  
-                            )
+                            font=dict(size=15)
                         )
                         st.plotly_chart(fig, use_container_width=True)
                 except Exception as e:
