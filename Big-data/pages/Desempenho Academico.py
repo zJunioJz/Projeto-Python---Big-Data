@@ -54,7 +54,24 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
+
+    # Exibir dados de ambas as planilhas para verificação
+    st.write("### Dados Cadastrais")
+    st.dataframe(dados_cadastrais)
+
+    st.write("### Dados de Desempenho Acadêmico")
+    st.dataframe(desempenho_academico)
+
+    # Verificar turmas únicas em ambas as planilhas
+    turmas_cadastrais = set(dados_cadastrais['Turma'].str.strip())
+    turmas_desempenho = set(desempenho_academico['Turma'].str.strip())
     
+    st.write("### Turmas encontradas em Dados Cadastrais")
+    st.write(sorted(turmas_cadastrais))
+    
+    st.write("### Turmas encontradas em Desempenho Acadêmico")
+    st.write(sorted(turmas_desempenho))
+
     # Definir as colunas necessárias
     colunas_necessarias = [
         'Nome', 'Desempenho acadêmico 1 bimestre',
@@ -80,6 +97,13 @@ if uploaded_file is not None:
         # Seleciona a turma
         selected_turma = st.selectbox('Selecione a Turma', turmas)
 
+        # Verifica se a turma selecionada está nos dados
+        if selected_turma not in turmas_cadastrais:
+            st.error(f"A turma {selected_turma} não está presente nos dados cadastrais.")
+        
+        if selected_turma not in turmas_desempenho:
+            st.error(f"A turma {selected_turma} não está presente nos dados de desempenho acadêmico.")
+        
         # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
 
