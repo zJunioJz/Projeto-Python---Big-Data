@@ -26,7 +26,7 @@ st.sidebar.markdown(
 )
 
 # Exibe o logo na barra lateral
-st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
+st.sidebar.image("logo.png", use_column_width=True)  # Alterar o caminho conforme necessário
 
 # Mensagem de sucesso
 st.success("Acompanhamento do Desempenho Acadêmico")
@@ -51,11 +51,6 @@ if uploaded_file is not None:
         # Renomeia a coluna 'Nomes' para 'Nome'
         if 'Nomes' in desempenho_academico.columns:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
-            # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
-            tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
-
-            # Remover valores vazios e garantir que todos os valores são strings
-            turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
     except Exception as e:
         st.error(f"Erro ao ler a planilha de desempenho acadêmico: {e}")
         st.stop()
@@ -78,7 +73,7 @@ if uploaded_file is not None:
 
         # Aplica o estilo do arquivo CSS
         try:
-            with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
+            with open('style.css') as f:  # Alterar o caminho conforme necessário
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
@@ -105,12 +100,10 @@ if uploaded_file is not None:
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            if coluna in aluno_data.columns and coluna in turma_data.columns:
+            if coluna in aluno_data.columns:
                 aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+            if coluna in turma_data.columns:
                 turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
-            else:
-                st.error(f"A coluna {coluna} não está presente nos dados do aluno ou da turma.")
-                continue
 
         # Exibe os dados cadastrais do aluno selecionado
         st.write(f"### Dados Cadastrais do Aluno: {selected_aluno}")
