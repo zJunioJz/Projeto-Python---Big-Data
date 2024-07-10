@@ -58,6 +58,9 @@ if uploaded_file is not None:
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+
+        # Tratar valores NaN na coluna 'Turma'
+        tabela['Turma'].fillna('Não especificado', inplace=True)
     
     colunas_necessarias = [
         'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
@@ -102,21 +105,13 @@ if uploaded_file is not None:
         for coluna in colunas_selecionadas:
             if coluna in aluno_data.columns:
                 try:
-                    # Verifica se a coluna é uma série
-                    if isinstance(aluno_data[coluna], pd.Series):
-                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                    else:
-                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
+                    aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
                 except Exception as e:
                     st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
                     
             if coluna in turma_data.columns:
                 try:
-                    # Verifica se a coluna é uma série
-                    if isinstance(turma_data[coluna], pd.Series):
-                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
-                    else:
-                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
+                    turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
                 except Exception as e:
                     st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
 
