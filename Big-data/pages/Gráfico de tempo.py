@@ -29,7 +29,7 @@ st.sidebar.markdown(
 st.sidebar.image("/mount/src/projeto-python---big-data/Big-data/logo.png", use_column_width=True)
 
 # Mensagem de sucesso
-st.success("Gráfico de tempo")
+st.success("Gráfico de Tempo")
 
 # Carregador de arquivos na barra lateral
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
@@ -109,8 +109,17 @@ if uploaded_file is not None:
 
             # Converte colunas selecionadas para numérico, forçando erros a NaN
             for coluna in colunas_selecionadas:
-                aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                if coluna in aluno_data.columns:
+                    try:
+                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+                    except Exception as e:
+                        st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
+
+                if coluna in turma_data.columns:
+                    try:
+                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+                    except Exception as e:
+                        st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
 
             # Ordena todos os dados em ordem alfabética pelo Nome
             tabela_sorted = tabela.sort_values(by='Nome')
@@ -121,15 +130,22 @@ if uploaded_file is not None:
             st.write("### Dados do Aluno Selecionado")
             st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
 
-            # Plotar gráfico "Tempo do Aluno"
+            # Calcula a média da turma
+            turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
+            turma_mean.columns = ['Métrica', 'Média da Turma']
+
+            # Prepara os dados do aluno para a comparação
+            aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Métrica', value_name='Valor do Aluno')
+            aluno_data_selecionadas['Nome'] = selected_aluno
+            comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
+
+            # Plotar gráfico "Dados de tempo do aluno"
             if colunas_selecionadas:
                 try:
                     if aluno_data[colunas_selecionadas].empty:
                         st.error("Nenhum dado disponível para o gráfico do aluno.")
                     else:
                         fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Tempo do Aluno(a)', text_auto=True)
-                        
-                        # Atualiza o layout do gráfico para ajustar o espaçamento das barras
                         fig.update_layout(
                             xaxis=dict(
                                 tickfont=dict(size=20)
@@ -144,6 +160,38 @@ if uploaded_file is not None:
                         st.plotly_chart(fig, use_container_width=True)
                 except Exception as e:
                     st.error(f"Erro ao gerar o gráfico do aluno: {e}")
+
+            # Plotar gráfico "Comparação de Tempo do Aluno"
+            if colunas_selecionadas:
+                try:
+                    if comparacao_df.empty:
+                        st.error("Nenhum dado disponível para a comparação com a média da turma.")
+                    else:
+                        fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
+                        fig.update_layout(
+                            title={
+                                'text': f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                                'x': 0.5  # Centraliza o título
+                            },
+                            bargap=0.4,  # Ajusta o espaço entre as barras
+                            bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+                            xaxis=dict(
+                                tickfont=dict(size=14),
+                                title='Métrica'
+                            ),
+                            yaxis=dict(
+                                tickfont=dict(size=14),
+                                title='Tempo'
+                            ),
+                            font=dict(size=12)
+                        )
+
+                        for trace in fig.data:
+                            trace.width = 0.30
+
+                        st.plotly_chart(fig, use_container_width=True)
+                except Exception as e:
+                    st.error(f"Erro ao gerar o gráfico de comparação: {e}")
 
 else:
     st.warning("Por favor, carregue um arquivo Excel.")
