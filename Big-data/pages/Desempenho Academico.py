@@ -61,7 +61,7 @@ if uploaded_file is not None:
     
     # Definir as colunas necessárias
     colunas_necessarias = [
-        'Nome', 'Desempenho acadêmico 1 bimestre',
+        'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
         'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
         'Desempenho acadêmico 4 bimestre'
     ]
