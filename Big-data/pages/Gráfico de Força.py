@@ -140,7 +140,7 @@ if uploaded_file is not None:
                         fig.update_layout(
                             title={
                             'text': f'Dados de Força do Aluno(a) ({selected_aluno}',
-                            'x': 0.25  # Centraliza o título
+                            'x': 0.30  # Centraliza o título
                         },
                             xaxis=dict(
                                 tickfont=dict(size=20)
@@ -165,6 +165,10 @@ if uploaded_file is not None:
                         fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Força do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                         
                         fig.update_layout(
+                            title={
+                            'text': f'Comparação de Força do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                            'x': 0.25  # Centraliza o título
+                        },
                             xaxis=dict(
                                 tickfont=dict(size=20)
                             ),
