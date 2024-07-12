@@ -73,7 +73,7 @@ if uploaded_file is not None:
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna não in tabela.columns]
+    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
     
     if colunas_faltantes:
         st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
