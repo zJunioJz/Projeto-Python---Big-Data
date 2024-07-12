@@ -47,16 +47,14 @@ if uploaded_file is not None:
             desempenho_academico.rename(columns={'Nomes': 'Nome'}, inplace=True)
             
     except Exception as e:
-        st.error(f"Erro ao ler a planilha de dados cadastrais: {e}")
+        st.error(f"Erro ao ler a planilha de dados: {e}")
         st.stop()
             
     if 'Nome' not in desempenho_academico.columns or 'Nome' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
     else:
         tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
-        
         tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
-        
         turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
     
     # Definir as colunas necessárias
@@ -96,6 +94,12 @@ if uploaded_file is not None:
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
         
+        # Verifica se a coluna 'Idade -Cálculo média' está presente
+        if 'Idade -Cálculo média' in aluno_data.columns:
+            idade_aluno = aluno_data['Idade -Cálculo média'].values[0]
+        else:
+            idade_aluno = None
+        
         # Seleciona as colunas para exibir
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
@@ -105,10 +109,9 @@ if uploaded_file is not None:
             aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
             turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
 
-
         # Exibe os dados cadastrais do aluno selecionado
-        st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
-        st.dataframe(aluno_data[['Nome', 'Turma'] + colunas_selecionadas])
+        st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Idade: {idade_aluno} - Turma: {aluno_data['Turma'].values[0]}")
+        st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
         
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
@@ -121,9 +124,8 @@ if uploaded_file is not None:
         # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
 
-        # Exibe a idade do aluno
-        if 'Idade -Cálculo média' in dados_cadastrais.columns:
-            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média'].values[0]
+        # Exibe a idade do aluno, se disponível
+        if idade_aluno is not None:
             st.write(f"**Idade do Aluno:** {idade_aluno} anos")
         else:
             st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
