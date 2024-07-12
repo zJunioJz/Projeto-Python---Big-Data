@@ -140,7 +140,7 @@ if uploaded_file is not None:
                         fig.update_layout(
                             title={
                             'text': f'Dados de Força do Aluno(a) ( {selected_aluno})',
-                            'x': 0.30  # Centraliza o título
+                            'x': 0.35  # Centraliza o título
                         },
                             xaxis=dict(
                                 tickfont=dict(size=20)
