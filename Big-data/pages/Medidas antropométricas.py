@@ -109,11 +109,11 @@ if uploaded_file is not None:
 
         # Gráfico das medidas antropométricas do aluno
         if colunas_selecionadas:
-            fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='', text_auto=True)
+            fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title=f'Medidas Antropométricas do Aluno(a) ( {selected_aluno})', text_auto=True)
             fig.update_layout(
                 title={
-                    'text': f'Medidas antropométricas do aluno ( {selected_aluno})',
-                    'x': 0.30  # Posição centralizada
+                    'text': f'Medidas Antropométricas do Aluno(a) ( {selected_aluno})',
+                    'x': 0.35  # Posição centralizada
                 },
                 bargap=0.50,
                 bargroupgap=0.1,
