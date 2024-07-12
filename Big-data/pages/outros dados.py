@@ -62,7 +62,7 @@ if uploaded_file is not None:
         ),
         title={
             'text': 'Média Total das Idades',
-            'x': 0.4  # Centralizar o título
+            'x': 0.40  # Centralizar o título
         }
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -78,7 +78,7 @@ if uploaded_file is not None:
         bargap=0.1,
         title={
             'text': 'Distribuição de Sexo por Turma',
-            'x': 0.40  # Centralizar o título
+            'x': 0.35  # Centralizar o título
         },
         xaxis=dict(
             tickfont=dict(
