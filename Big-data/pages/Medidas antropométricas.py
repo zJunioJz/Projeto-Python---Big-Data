@@ -112,8 +112,8 @@ if uploaded_file is not None:
             fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='', text_auto=True)
             fig.update_layout(
                 title={
-                    'text': f'Medidas antropométricas do aluno ({selected_aluno})',
-                    'x': 0.45  # Posição centralizada
+                    'text': f'Medidas antropométricas do aluno ( {selected_aluno})',
+                    'x': 0.30  # Posição centralizada
                 },
                 bargap=0.50,
                 bargroupgap=0.1,
@@ -135,6 +135,10 @@ if uploaded_file is not None:
                                    title=f'Comparação de Medidas Antropométricas do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
                                    text_auto=True)
             fig_comparacao.update_layout(
+                title={
+                     'text': f'Comparação de Medidas Antropométricas do Aluno ({selected_aluno}) com a Média da Turma ( {selected_turma})',
+                        'x': 0.25  # Centraliza o título
+                },
                 xaxis=dict(
                     tickfont=dict(size=20)
                 ),
