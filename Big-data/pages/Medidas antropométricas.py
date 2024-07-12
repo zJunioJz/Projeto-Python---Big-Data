@@ -132,11 +132,11 @@ if uploaded_file is not None:
         # Gráfico de comparação entre o aluno e a média da turma
         if colunas_selecionadas:
             fig_comparacao = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group',
-                                   title=f'Comparação de Medidas Antropométricas do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                                   title=f'Comparação de Medidas Antropométricas do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})',
                                    text_auto=True)
             fig_comparacao.update_layout(
                 title={
-                     'text': f'Comparação de Medidas Antropométricas do Aluno ({selected_aluno}) com a Média da Turma ( {selected_turma})',
+                     'text': f'Comparação de Medidas Antropométricas do Aluno(a) ({selected_aluno}) com a Média da Turma ( {selected_turma})',
                         'x': 0.20  # Centraliza o título
                 },
                 xaxis=dict(
