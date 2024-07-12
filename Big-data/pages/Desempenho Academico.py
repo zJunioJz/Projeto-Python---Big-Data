@@ -35,7 +35,6 @@ st.success("Acompanhamento do Desempenho Acadêmico")
 uploaded_file = st.sidebar.file_uploader("Carregar arquivo Excel", type=["xlsx"])
 
 if uploaded_file is not None:
-    # Leitura dos dados cadastrais
     try:
         desempenho_academico = pd.read_excel(uploaded_file, sheet_name='desempenho acadêmico', nrows=350)
         dados_cadastrais = pd.read_excel(uploaded_file, sheet_name='Dados Cadastrais')
@@ -59,14 +58,12 @@ if uploaded_file is not None:
         
         turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
     
-    # Definir as colunas necessárias
     colunas_necessarias = [
         'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
         'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
         'Desempenho acadêmico 4 bimestre'
     ]
 
-    # Filtrar as colunas presentes na tabela
     colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
     
     if colunas_faltantes:
@@ -74,61 +71,45 @@ if uploaded_file is not None:
     else:
         tabela = tabela[colunas_necessarias]
        
-        # Aplica o estilo do arquivo CSS
         try:
             with open('/mount/src/projeto-python---big-data/Big-data/style.css') as f:
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
 
-        # Seleciona a turma
         selected_turma = st.selectbox('Selecione a Turma', turmas)
 
-        # Filtra alunos da turma selecionada
         turma_data = tabela[tabela['Turma'] == selected_turma]
-        
-        # Ordena os alunos em ordem alfabética
         turma_data = turma_data.sort_values(by='Nome')
 
-        # Seleciona o aluno
         selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
-        # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
         
-        # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
-        # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
             aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
             turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
 
+        colunas_desejadas = ['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas
+        colunas_existem = [coluna for coluna in colunas_desejadas if coluna in aluno_data.columns]
 
-        # Exibe os dados cadastrais do aluno selecionado
-        st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
-        st.dataframe(aluno_data[['Nome', 'Turma'] + colunas_selecionadas])
+        if colunas_existem:
+            st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
+            st.dataframe(aluno_data[colunas_existem])
+        else:
+            st.error("Nenhuma das colunas especificadas está presente no DataFrame.")
         
-        # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
         turma_mean.columns = ['Bimestre', 'Média da Turma']
         
-        # Prepara os dados do aluno para a comparação
         aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Bimestre', value_name='Nota do Aluno')
         aluno_data_selecionadas['Nome'] = selected_aluno
         
-        # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
 
-        # Exibe a idade do aluno
-        if 'Idade -Cálculo média' in dados_cadastrais.columns:
-            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média'].values[0]
-            st.write(f"**Idade do Aluno:** {idade_aluno} anos")
-        else:
-            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
-
-        # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
             try:
                 if comparacao_df.empty:
@@ -138,10 +119,10 @@ if uploaded_file is not None:
                     fig.update_layout(
                         title={
                             'text': f'Comparação de Desempenho do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})',
-                            'x': 0.25  # Centraliza o título
+                            'x': 0.25
                         },
-                        bargap=0.4,  # Ajusta o espaço entre as barras
-                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
+                        bargap=0.4,
+                        bargroupgap=0.1,
                         xaxis=dict(
                             tickfont=dict(size=14),
                             title='Bimestre'
