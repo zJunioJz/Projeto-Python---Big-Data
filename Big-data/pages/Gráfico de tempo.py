@@ -136,7 +136,7 @@ if uploaded_file is not None:
                     fig.update_layout(
                         title={
                             'text': f'Dados de Tempo do Aluno(a) ( {selected_aluno})',
-                            'x': 0.30  # Centraliza o título
+                            'x': 0.35  # Centraliza o título
                         },
                         bargap=0.3,  # Ajusta o espaço entre as barras
                         bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
@@ -168,7 +168,7 @@ if uploaded_file is not None:
                     fig.update_layout(
                         title={
                             'text': f'Comparação de Tempo do Aluno(a) ( {selected_aluno}) com a Média da Turma ({selected_turma})',
-                            'x': 0.20  # Centraliza o título
+                            'x': 0.25  # Centraliza o título
                         },
                         bargap=0.4,  # Ajusta o espaço entre as barras
                         bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
