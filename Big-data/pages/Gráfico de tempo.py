@@ -63,6 +63,7 @@ if uploaded_file is not None:
 
         # Remover valores vazios e garantir que todos os valores são strings
         turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
+    
     colunas_necessarias = [
         'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
         'Tempo de reação direita', 'Tempo de reação 1 direita', 
@@ -72,7 +73,7 @@ if uploaded_file is not None:
     ]
 
     # Filtrar as colunas presentes na tabela
-    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna not in tabela.columns]
+    colunas_faltantes = [coluna for coluna in colunas_necessarias if coluna não in tabela.columns]
     
     if colunas_faltantes:
         st.error(f"Colunas faltantes no arquivo: {', '.join(colunas_faltantes)}")
@@ -86,24 +87,24 @@ if uploaded_file is not None:
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
             
-            # Seleciona a turma
-            selected_turma = st.selectbox('Selecione a Turma', turmas)
+        # Seleciona a turma
+        selected_turma = st.selectbox('Selecione a Turma', turmas)
 
-            # Filtra alunos da turma selecionada
-            turma_data = tabela[tabela['Turma'] == selected_turma]
+        # Filtra alunos da turma selecionada
+        turma_data = tabela[tabela['Turma'] == selected_turma]
 
-            # Ordena os alunos em ordem alfabética
-            turma_data = turma_data.sort_values(by='Nome')
+        # Ordena os alunos em ordem alfabética
+        turma_data = turma_data.sort_values(by='Nome')
 
-            # Seleciona o aluno
-            selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+        # Seleciona o aluno
+        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
-            # Filtra dados do aluno selecionado
-            aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
+        # Filtra dados do aluno selecionado
+        aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
-            # Seleciona as colunas para exibir
-            colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
-            colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
+        # Seleciona as colunas para exibir
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
+        colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
@@ -116,11 +117,11 @@ if uploaded_file is not None:
         st.write("### Dados do Aluno Selecionado")
         st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
         
-         # Calcula a média da turma
+        # Calcula a média da turma
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
         turma_mean.columns = ['Métrica', 'Média da Turma']
 
-         # Prepara os dados do aluno para a comparação
+        # Prepara os dados do aluno para a comparação
         aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Métrica', value_name='Valor do Aluno')
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
