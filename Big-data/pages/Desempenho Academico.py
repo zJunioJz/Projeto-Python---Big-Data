@@ -53,7 +53,7 @@ if uploaded_file is not None:
     if 'Nome' not in desempenho_academico.columns or 'Nome' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
     else:
-        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma', 'Idade -Cálculo média']], on='Nome', how='left')
         
         tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
         
@@ -105,10 +105,17 @@ if uploaded_file is not None:
             aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
             turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
 
-
-        # Exibe os dados cadastrais do aluno selecionado
-        st.write(f"### Dados Cadastrais do Aluno: {selected_aluno}")
-        st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
+        # Obtém a idade do aluno
+        idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média']
+        idade_aluno = idade_aluno.values[0] if not idade_aluno.empty else 'Desconhecida'
+        
+        # Exibe os dados cadastrais do aluno selecionado com idade
+        if 'Idade -Cálculo média' in aluno_data.columns:
+            st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]} - Idade: {idade_aluno} anos")
+            st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
+        else:
+            st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
+            st.dataframe(aluno_data[['Nome', 'Turma'] + colunas_selecionadas])
         
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
@@ -120,13 +127,6 @@ if uploaded_file is not None:
         
         # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
-
-        # Exibe a idade do aluno
-        if 'Idade -Cálculo média' in dados_cadastrais.columns:
-            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média'].values[0]
-            st.write(f"**Idade do Aluno:** {idade_aluno} anos")
-        else:
-            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
