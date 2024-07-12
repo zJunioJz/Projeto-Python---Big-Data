@@ -135,10 +135,13 @@ if uploaded_file is not None:
                     if aluno_data[colunas_selecionadas].empty:
                         st.error("Nenhum dado disponível para o gráfico do aluno.")
                     else:
-                        fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title='Dados de Força do Aluno(a)', text_auto=True)
-                        
+                        fig = px.bar(aluno_data, x='Nome', y=colunas_selecionadas, barmode='group', title=f'Dados de Força do Aluno(a) ({selected_aluno}', text_auto=True)
                         # Atualiza o layout do gráfico para ajustar o espaçamento das barras
                         fig.update_layout(
+                            title={
+                            'text': f'Dados de Força do Aluno(a) ({selected_aluno}',
+                            'x': 0.25  # Centraliza o título
+                        },
                             xaxis=dict(
                                 tickfont=dict(size=20)
                             ),
