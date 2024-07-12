@@ -167,7 +167,7 @@ if uploaded_file is not None:
                     fig = px.bar(comparacao_df, x='Métrica', y=['Valor do Aluno', 'Média da Turma'], barmode='group', title=f'Comparação de Tempo do Aluno ({selected_aluno}) com a Média da Turma ({selected_turma})', text_auto=True)
                     fig.update_layout(
                         title={
-                            'text': f'Comparação de Tempo do Aluno(a)( {selected_aluno}) com a Média da Turma ({selected_turma})',
+                            'text': f'Comparação de Tempo do Aluno(a) ( {selected_aluno}) com a Média da Turma ({selected_turma})',
                             'x': 0.20  # Centraliza o título
                         },
                         bargap=0.4,  # Ajusta o espaço entre as barras
