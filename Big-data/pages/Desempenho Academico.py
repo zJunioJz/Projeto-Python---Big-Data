@@ -108,7 +108,7 @@ if uploaded_file is not None:
 
         # Exibe os dados cadastrais do aluno selecionado
         st.write(f"### Dados Cadastrais do Aluno: {selected_aluno}")
-        st.dataframe(aluno_data[['Nome', 'Turma'] + colunas_selecionadas])
+        st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
         
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
