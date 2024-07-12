@@ -108,7 +108,7 @@ if uploaded_file is not None:
 
         # Exibe os dados cadastrais do aluno selecionado
         st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
-        st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
+        st.dataframe(aluno_data[['Nome', 'Turma'] + colunas_selecionadas])
         
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
@@ -121,7 +121,12 @@ if uploaded_file is not None:
         # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
 
-        
+        # Exibe a idade do aluno
+        if 'Idade -Cálculo média' in dados_cadastrais.columns:
+            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média'].values[0]
+            st.write(f"**Idade do Aluno:** {idade_aluno} anos")
+        else:
+            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
