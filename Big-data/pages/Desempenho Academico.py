@@ -53,7 +53,7 @@ if uploaded_file is not None:
     if 'Nome' not in desempenho_academico.columns or 'Nome' not in dados_cadastrais.columns:
         st.error("A coluna 'Nome' não está presente em ambas as planilhas.")
     else:
-        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
+        tabela = pd.merge(desempenho_academico, dados_cadastrais[['Nome', 'Turma', 'Idade -Cálculo média']], on='Nome', how='left')
         
         tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
         
@@ -61,7 +61,7 @@ if uploaded_file is not None:
     
     # Definir as colunas necessárias
     colunas_necessarias = [
-        'Nome', 'Turma', 'Idade -Cálculo média', 'Desempenho acadêmico 1 bimestre',
+        'Nome', 'Turma', 'Desempenho acadêmico 1 bimestre',
         'Desempenho acadêmico 2 bimestre', 'Desempenho acadêmico 3 bimestre',
         'Desempenho acadêmico 4 bimestre'
     ]
