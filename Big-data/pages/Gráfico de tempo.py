@@ -58,7 +58,11 @@ if uploaded_file is not None:
     else:
         # Mesclar as duas planilhas com base na coluna 'Nome'
         tabela = pd.merge(aptidao_fisica, dados_cadastrais[['Nome', 'Turma']], on='Nome', how='left')
-    
+        # Garantir que a coluna 'Turma' não contenha valores nulos e converter para string
+        tabela['Turma'] = tabela['Turma'].fillna('').astype(str)
+
+        # Remover valores vazios e garantir que todos os valores são strings
+        turmas = sorted(set(tabela['Turma'].str.strip()) - {''}, key=str.lower)
     colunas_necessarias = [
         'Nome', 'Turma', 'Shuttle run', 'Velocidade / aceleração', 
         'Tempo de reação direita', 'Tempo de reação 1 direita', 
@@ -81,62 +85,42 @@ if uploaded_file is not None:
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
         except FileNotFoundError:
             st.error("Arquivo de estilo não encontrado.")
+            
+            # Seleciona a turma
+            selected_turma = st.selectbox('Selecione a Turma', turmas)
 
-        # Seleciona a turma
-        selected_turma = st.selectbox('Selecione a Turma', tabela['Turma'].unique())
+            # Filtra alunos da turma selecionada
+            turma_data = tabela[tabela['Turma'] == selected_turma]
 
-        # Filtra alunos da turma selecionada
-        turma_data = tabela[tabela['Turma'] == selected_turma]
+            # Ordena os alunos em ordem alfabética
+            turma_data = turma_data.sort_values(by='Nome')
 
-        # Seleciona o aluno
-        selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
+            # Seleciona o aluno
+            selected_aluno = st.selectbox('Selecione o aluno', turma_data['Nome'].unique())
 
-        # Filtra dados do aluno selecionado
-        aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
+            # Filtra dados do aluno selecionado
+            aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
 
-        # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
-        colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
+            # Seleciona as colunas para exibir
+            colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
+            colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
         
         # Converte colunas selecionadas para numérico, forçando erros a NaN
         for coluna in colunas_selecionadas:
-            if coluna in aluno_data.columns:
-                try:
-                    # Verifica se a coluna é uma série
-                    if isinstance(aluno_data[coluna], pd.Series):
-                        aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
-                    else:
-                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
-                except Exception as e:
-                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
-                    
-            if coluna in turma_data.columns:
-                try:
-                    # Verifica se a coluna é uma série
-                    if isinstance(turma_data[coluna], pd.Series):
-                        turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
-                    else:
-                        st.error(f"A coluna '{coluna}' não é uma série e não pode ser convertida.")
-                except Exception as e:
-                    st.error(f"Erro ao converter coluna '{coluna}' para numérico: {e}")
-
+            aluno_data[coluna] = pd.to_numeric(aluno_data[coluna], errors='coerce')
+            turma_data[coluna] = pd.to_numeric(turma_data[coluna], errors='coerce')
+        
         st.write("### Todos os Dados")
-        try:
-            st.dataframe(tabela[['Nome'] + colunas_selecionadas])
-        except Exception as e:
-            st.error(f"Erro ao exibir os dados: {e}")
+        st.dataframe(turma_data[['Nome'] + colunas_selecionadas])
 
         st.write("### Dados do Aluno Selecionado")
-        try:
-            st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
-        except Exception as e:
-            st.error(f"Erro ao exibir os dados do aluno: {e}")
-
-        # Calcula a média da turma
+        st.dataframe(aluno_data[['Nome'] + colunas_selecionadas])
+        
+         # Calcula a média da turma
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
         turma_mean.columns = ['Métrica', 'Média da Turma']
 
-        # Prepara os dados do aluno para a comparação
+         # Prepara os dados do aluno para a comparação
         aluno_data_selecionadas = aluno_data[colunas_selecionadas].melt(var_name='Métrica', value_name='Valor do Aluno')
         aluno_data_selecionadas['Nome'] = selected_aluno
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Métrica')
