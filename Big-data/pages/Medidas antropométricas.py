@@ -143,6 +143,8 @@ if uploaded_file is not None:
                 ),
                 font=dict(size=15)
             )
+            for trace in fig.data:
+                trace.width = 0.06
             st.plotly_chart(fig_comparacao, use_container_width=True)
 
 else:
