@@ -120,10 +120,6 @@ if uploaded_file is not None:
         # Combina os dados do aluno e a média da turma
         comparacao_df = pd.merge(aluno_data_selecionadas, turma_mean, on='Bimestre')
 
-        # Exibe a idade do aluno
-        idade_aluno = aluno_data['Idade -Cálculo média'].values[0]
-        st.write(f"**Idade do Aluno:** {idade_aluno} anos")
-
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
             try:
