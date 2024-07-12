@@ -126,7 +126,7 @@ if uploaded_file is not None:
                 font=dict(size=15)
             )
             for trace in fig.data:
-                    trace.width = 0.05
+                    trace.width = 0.08
             st.plotly_chart(fig, use_container_width=True)
 
         # Gráfico de comparação entre o aluno e a média da turma
