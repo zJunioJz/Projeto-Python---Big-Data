@@ -78,7 +78,7 @@ if uploaded_file is not None:
         bargap=0.1,
         title={
             'text': 'Distribuição de Sexo por Turma',
-            'x': 0.35  # Centralizar o título
+            'x': 0.38  # Centralizar o título
         },
         xaxis=dict(
             tickfont=dict(
