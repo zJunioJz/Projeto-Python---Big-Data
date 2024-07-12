@@ -62,7 +62,7 @@ if uploaded_file is not None:
         ),
         title={
             'text': 'Média Total das Idades',
-            'x': 0.45  # Centralizar o título
+            'x': 0.4  # Centralizar o título
         }
     )
     st.plotly_chart(fig, use_container_width=True)
