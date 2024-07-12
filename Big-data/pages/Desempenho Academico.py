@@ -123,10 +123,10 @@ if uploaded_file is not None:
 
         # Exibe a idade do aluno
         if 'Idade -Cálculo média' in dados_cadastrais.columns:
-            idade_aluno = aluno_data['Idade -Cálculo média'].values[0]
+            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média'].values[0]
             st.write(f"**Idade do Aluno:** {idade_aluno} anos")
         else:
-            st.error("Coluna 'Idade' não encontrada nos dados do aluno.")
+            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
