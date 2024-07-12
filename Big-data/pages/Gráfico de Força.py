@@ -139,7 +139,7 @@ if uploaded_file is not None:
                         # Atualiza o layout do gráfico para ajustar o espaçamento das barras
                         fig.update_layout(
                             title={
-                            'text': f'Dados de Força do Aluno(a) ({selected_aluno})',
+                            'text': f'Dados de Força do Aluno(a) ( {selected_aluno})',
                             'x': 0.30  # Centraliza o título
                         },
                             xaxis=dict(
@@ -166,7 +166,7 @@ if uploaded_file is not None:
                         
                         fig.update_layout(
                             title={
-                            'text': f'Comparação de Força do Aluno(a) ({selected_aluno}) com a Média da Turma ({selected_turma})',
+                            'text': f'Comparação de Força do Aluno(a) ( {selected_aluno}) com a Média da Turma ({selected_turma})',
                             'x': 0.25  # Centraliza o título
                         },
                             xaxis=dict(
