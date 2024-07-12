@@ -62,14 +62,14 @@ if uploaded_file is not None:
         ),
         title={
             'text': 'Média Total das Idades',
-            'x': 0.25  # Centralizar o título
+            'x': 0.45  # Centralizar o título
         }
     )
     st.plotly_chart(fig, use_container_width=True)
 
     # Gráfico de histograma de distribuição do sexo por turma
     color_discrete_map = {'M': 'Blue', 'F': 'Pink'}
-    fig_sexo = px.histogram(df, x='Turma', nbins=30, color='Sexo', title='Distribuição do sexo por turma',
+    fig_sexo = px.histogram(df, x='Turma', nbins=30, color='Sexo', title='Distribuição de Sexo por Turma',
                             color_discrete_map=color_discrete_map, text_auto=True)
     fig_sexo.update_layout(
         plot_bgcolor='white',
@@ -77,8 +77,8 @@ if uploaded_file is not None:
         yaxis_title='Frequência',
         bargap=0.1,
         title={
-            'text': 'Distribuição do sexo por turma',
-            'x': 0.25  # Centralizar o título
+            'text': 'Distribuição de Sexo por Turma',
+            'x': 0.40  # Centralizar o título
         },
         xaxis=dict(
             tickfont=dict(
