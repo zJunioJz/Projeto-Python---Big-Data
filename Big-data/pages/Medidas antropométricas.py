@@ -115,7 +115,7 @@ if uploaded_file is not None:
                     'text': f'Medidas antropométricas do aluno ({selected_aluno})',
                     'x': 0.45  # Posição centralizada
                 },
-                bargap=0.60,
+                bargap=0.50,
                 bargroupgap=0.1,
                 xaxis=dict(
                     tickfont=dict(size=20)
@@ -125,6 +125,8 @@ if uploaded_file is not None:
                 ),
                 font=dict(size=15)
             )
+            for trace in fig.data:
+                    trace.width = 0.10
             st.plotly_chart(fig, use_container_width=True)
 
         # Gráfico de comparação entre o aluno e a média da turma
