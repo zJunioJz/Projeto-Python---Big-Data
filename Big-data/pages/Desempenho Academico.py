@@ -96,6 +96,8 @@ if uploaded_file is not None:
         # Filtra dados do aluno selecionado
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
         
+        idade_aluno = aluno_data['Idade -Cálculo média'].values[0]
+        
         # Seleciona as colunas para exibir
         colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][2:]  # Exclui 'Nome' e 'Turma'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
@@ -108,7 +110,7 @@ if uploaded_file is not None:
 
         # Exibe os dados cadastrais do aluno selecionado
         st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
-        st.dataframe(aluno_data[['Nome', 'Turma'] + colunas_selecionadas])
+        st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
         
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
@@ -123,16 +125,10 @@ if uploaded_file is not None:
 
         # Exibe a idade do aluno
         if 'Idade -Cálculo média' in dados_cadastrais.columns:
-            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média']
-            
-            # Verifica se encontrou a idade para o aluno selecionado
-            if not idade_aluno.empty:
-                idade_aluno = idade_aluno.values[0]
-                st.write(f"**Idade do Aluno:** {idade_aluno} anos")
-            else:
-                st.error(f"Idade do aluno '{selected_aluno}' não encontrada nos dados cadastrais.")
+            idade_aluno = dados_cadastrais[dados_cadastrais['Nome'] == selected_aluno]['Idade -Cálculo média'].values[0]
+            st.write(f"**Idade do Aluno:** {idade_aluno} anos")
         else:
-            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados cadastrais.")
+            st.error("Coluna 'Idade -Cálculo média' não encontrada nos dados do aluno.")
 
         # Plotar gráfico "Comparação de Desempenho do Aluno"
         if colunas_selecionadas:
