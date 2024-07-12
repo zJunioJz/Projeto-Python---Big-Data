@@ -97,7 +97,7 @@ if uploaded_file is not None:
         aluno_data = turma_data[turma_data['Nome'] == selected_aluno]
         
         # Seleciona as colunas para exibir
-        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][3:]  # Exclui 'Nome', 'Turma' e 'Idade -Cálculo média'
+        colunas_disponiveis = [coluna for coluna in colunas_necessarias if coluna in tabela.columns][4:]  # Exclui 'Nome', 'Turma' e 'Idade -Cálculo média'
         colunas_selecionadas = st.multiselect("Selecione as colunas para exibir", colunas_disponiveis, default=colunas_disponiveis)
 
         # Converte colunas selecionadas para numérico, forçando erros a NaN
@@ -107,7 +107,7 @@ if uploaded_file is not None:
 
         # Exibe os dados cadastrais do aluno selecionado
         st.write(f"### Dados Cadastrais do Aluno: {selected_aluno} - Turma: {aluno_data['Turma'].values[0]}")
-        st.dataframe(aluno_data[['Nome', 'Turma', 'Idade -Cálculo média'] + colunas_selecionadas])
+        st.dataframe(aluno_data[['Nome', 'Turma', 'Sexo', 'Idade -Cálculo média'] + colunas_selecionadas])
         
         # Calcula a média da turma para cada bimestre
         turma_mean = turma_data[colunas_selecionadas].mean().reset_index()
