@@ -113,7 +113,7 @@ if uploaded_file is not None:
             fig.update_layout(
                 title={
                     'text': f'Medidas Antropométricas do Aluno(a) ( {selected_aluno})',
-                    'x': 0.38  # Posição centralizada
+                    'x': 0.35  # Posição centralizada
                 },
                 bargap=0.50,
                 bargroupgap=0.1,
