@@ -154,7 +154,7 @@ if uploaded_file is not None:
                             'x': 0.5  # Centraliza o título
                         },
                         bargap=0.3,  # Ajusta o espaço entre as barras
-                        bargroupgap=0.10,  # Ajusta o espaço entre grupos de barras
+                        bargroupgap=0.1,  # Ajusta o espaço entre grupos de barras
                         xaxis=dict(
                             tickfont=dict(size=14),
                             title='Nome'
@@ -167,7 +167,7 @@ if uploaded_file is not None:
                     )
 
                     for trace in fig.data:
-                        trace.width = 0.05
+                        trace.width = 0.10
 
                     st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
